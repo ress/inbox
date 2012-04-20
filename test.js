@@ -1,72 +1,3 @@
-function processLine1(line){
-    var match,
-        tokens,
-        token,
-        quoteType, quotedStr, tokenArr = [];
-    
-    var tokenTree = {nodes: []}, tokenBranch = tokenTree, curToken, lastToken;
-    
-    tokens = (line || "").trim().split(/\s+/);
-    
-    for(var i=0, len = tokens.length; i<len; i++){
-        token = quotedStr = tokens[i];
-        
-        curToken = {
-            nodes:[]
-        };
-        
-        if(token.charAt(0).match(/[\(]/)){
-            // one step down
-            token = token.substr(1);
-            tokenBranch = lastToken;
-        }
-        
-        if(token.charAt(0).match(/["]/)){
-            quoteType = token.charAt(0);
-            
-            if(quotedStr.length <= 1 || quotedStr.match(new RegExp("(\\\\.|[^"+quoteType+"])$"))){
-                for(i++; i<len; i++){
-                    token = tokens[i];
-                    quotedStr += " "+token;
-                    if(quotedStr.length>1 && quotedStr.match(new RegExp("[^\\\\]"+quoteType+"$"))){
-                        break;
-                    }
-                }
-            }
-            
-            if(quotedStr.charAt(0) == quoteType){
-                quotedStr = quotedStr.substr(1);
-            }
-            
-            if(quotedStr.charAt(quotedStr.length-1) == quoteType){
-                quotedStr = quotedStr.substr(0, quotedStr.length-1);
-            }
-            
-            quotedStr = quotedStr.replace(/\\(.)/g, "$1");
-            token = quotedStr;
-        }
-        
-        if(token.charAt(token.length-1).match(/[\)]/)){
-            // one step up
-            token = token.substr(0, token.length-1);
-            
-            curToken.value = token;
-            curToken.parentNode = tokenBranch;
-            tokenBranch.nodes.push(curToken);
-            
-            tokenBranch = tokenBranch.parentNode || tokenBranch;
-        }else{
-            curToken.value = token;
-            curToken.parentNode = tokenBranch;
-            tokenBranch.nodes.push(curToken);
-        }
-        
-        lastToken = curToken;
-    }
-    
-    
-    console.log(require("util").inspect(tokenTree, false, 7));
-}
 
 
 function parseLine(line){
@@ -90,7 +21,7 @@ function parseLine(line){
     while(i < line.length){
         
         curchar = line[i].charAt(0);
-        
+
         switch(curchar){
             case " ":
             case "\t":
@@ -221,4 +152,4 @@ function parseLine(line){
 
 
 
-processLine2('14 FETCH (FLAGS (\Seen \Deleted)) * 12 FETCH (RFC822 {342}');
+console.log(require("util").inspect(parseLine('14 FETCH (FL\\ AGS (\Seen \Deleted)) * 12 FETCH (RFC822 {342}'), false, 7));
