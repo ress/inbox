@@ -1,11 +1,11 @@
 
-function CommandParser(){
+function RawResponseParser(){
 	this.init();
 }
 
-CommandParser.prototype.states = ["DEFAULT", "LITERAL", "QUOTED"];
+RawResponseParser.prototype.states = ["DEFAULT", "LITERAL", "QUOTED"];
 
-CommandParser.prototype.init = function(){
+RawResponseParser.prototype.init = function(){
 	this.state = "DEFAULT",    
 	this.quoteMark = '';
 	this.escaped = false;
@@ -23,21 +23,26 @@ CommandParser.prototype.init = function(){
     };
 }
 
-CommandParser.prototype.write = function(chunk){
+RawResponseParser.prototype.write = function(chunk){
 	chunk = (chunk || "").toString("binary");
 	this.parseLine(chunk);
 	return true;
 }
 
-CommandParser.prototype.writeBlock = function(chunk){
+RawResponseParser.prototype.writeBlock = function(chunk){
+	if(!this.node.value){
+		this.node.value = "";
+	}
+	
 	if(!this.node.block){
 		this.node.value = "";
 		this.node.block = true;
 	}
+	
 	this.node.value += (chunk || "").toString("binary");
 }
 
-CommandParser.prototype.parseLine = function(line){
+RawResponseParser.prototype.parseLine = function(line){
 
 	var i=0, curchar;
 	
@@ -160,12 +165,12 @@ CommandParser.prototype.parseLine = function(line){
     
 }
 
-CommandParser.prototype.addToBranch = function(){
+RawResponseParser.prototype.addToBranch = function(){
 	this.branch.nodes.push(this.node);
 	this.branch.lastNode = this.node;
 }
 
-CommandParser.prototype.createNode = function(value){
+RawResponseParser.prototype.createNode = function(value){
 	this.lastNode = this.node;
 	
 	this.node = {};
@@ -177,7 +182,7 @@ CommandParser.prototype.createNode = function(value){
 	this.node.parentNode = this.branch;
 }
 
-CommandParser.prototype.end = function(){
+RawResponseParser.prototype.end = function(){
 	if(this.node.value){
 	    if(this.state == "LITERAL" || this.state=="QUOTED"){
 	    	this.branch.nodes.push(this.node);
@@ -191,7 +196,7 @@ CommandParser.prototype.end = function(){
 	return tree;
 }
 
-CommandParser.prototype.finalize = function(){
+RawResponseParser.prototype.finalize = function(){
 	var tree = [];
 	walker(this.tree.nodes, tree);
 	return tree;
@@ -225,7 +230,7 @@ CommandParser.prototype.finalize = function(){
 	}
 }
 
-var cp = new CommandParser();
+var cp = new RawResponseParser();
 
 //cp.write("A654 FETCH 2:4 (FLAGS BODY[HEADER.FIELDS (DATE FROM)])");
 //cp.write("* 23 FETCH (FLAGS (\\Seen) UID 4827313)");
@@ -238,9 +243,9 @@ cp.write(")");
 
 cp.end();
 */
-//cp.write("* 12 FETCH (FLAGS (\\Seen) INTERNALDATE \"17-Jul-1996 02:44:25 -0700\" RFC822.SIZE 4286 ENVELOPE (\"Wed, 17 Jul 1996 02:23:25 -0700 (PDT)\" \"IMAP4rev1 WG mtg summary and minutes\" ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((NIL NIL \"imap\" \"cac.washington.edu\")) ((NIL NIL \"minutes\" \"CNRI.Reston.VA.US\") (\"John Klensin\" NIL \"KLENSIN\" \"MIT.EDU\")) NIL NIL \"<B27397-0100000@cac.washington.edu>\") BODY (\"TEXT\" \"PLAIN\" (\"CHARSET\" \"US-ASCII\") NIL NIL \"7BIT\" 3028 92))");
+cp.write("* 12 FETCH (FLAGS (\\Seen) INTERNALDATE \"17-Jul-1996 02:44:25 -0700\" RFC822.SIZE 4286 ENVELOPE (\"Wed, 17 Jul 1996 02:23:25 -0700 (PDT)\" \"IMAP4rev1 WG mtg summary and minutes\" ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((\"Terry Gray\" NIL \"gray\" \"cac.washington.edu\")) ((NIL NIL \"imap\" \"cac.washington.edu\")) ((NIL NIL \"minutes\" \"CNRI.Reston.VA.US\") (\"John Klensin\" NIL \"KLENSIN\" \"MIT.EDU\")) NIL NIL \"<B27397-0100000@cac.washington.edu>\") BODY (\"TEXT\" \"PLAIN\" (\"CHARSET\" \"US-ASCII\") NIL NIL \"7BIT\" 3028 92))");
 
-cp.write("* OK [ALERT] System shutdown in 10 minutes");
+//cp.write("* OK [ALERT] System shutdown in 10 minutes");
 
 console.log(JSON.stringify(cp.end()))
 
