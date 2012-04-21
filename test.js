@@ -1,23 +1,37 @@
 
+function CommandParser(){
+	this.state = "DEFAULT",    
+	this.quoteMark = '';
+	this.escaped = false;
+    
+	this.tree = {
+        nodes: []
+    };
+	
+	this.branch = this.tree;
+	
+	this.node = {
+        parentNode: this.branch,
+        value: "",
+        nodes: []
+    };
+	
+    
+}
 
-function parseLine(line){
-    var i=0, curchar;
-    
-    var states = ["DEFAULT", "LITERAL", "QUOTED"],
-        state = "DEFAULT",    
-        quoteMark,
-        escaped = false,
-        
-        tree = {
-            nodes: []
-        },
-        branch = tree,
-        node = {
-            parentNode: branch,
-            value: "",
-            nodes: []
-        };
-    
+CommandParser.prototype.states = ["DEFAULT", "LITERAL", "QUOTED"];
+
+CommandParser.prototype.write = function(chunk){
+	chunk = (chunk || "").toString("binary");
+	this.parseLine(chunk);
+	return true;
+}
+
+
+CommandParser.prototype.parseLine = function(line){
+
+	var i=0, curchar;
+	
     while(i < line.length){
         
         curchar = line[i].charAt(0);
@@ -25,56 +39,60 @@ function parseLine(line){
         switch(curchar){
             case " ":
             case "\t":
-                if(state == "QUOTED"){
-                    node.value += curchar;
-                }else if(state == "LITERAL" && escaped){
-                    node.value += curchar;
-                }else if(state == "LITERAL"){
-                    branch.nodes.push(node);
-                    state = "DEFAULT";
-                    node = {
-                        parentNode: branch,
+                if(this.state == "QUOTED"){
+                	this.node.value += curchar;
+                }else if(this.state == "LITERAL" && this.escaped){
+                	this.node.value += curchar;
+                }else if(this.state == "LITERAL"){
+                	this.branch.nodes.push(this.node);
+                	this.state = "DEFAULT";
+                	this.node = {
+                        parentNode: this.branch,
                         value: "",
                         nodes: []
                     }
                 }
                 break;
             case '\\':
-                if(escaped){
-                    node.value += curchar;
-                }else if(state == "LITERAL" || state == "QUOTED"){
-                    escaped = true;
-                }else if(state == "DEFAULT"){
-                    escaped = true;
-                    state = "LITERAL";
+                if(this.escaped || this.state == "LITERAL"){
+                	this.node.value += curchar;
+                }else if(this.state == "QUOTED"){
+                	this.escaped = true;
+                }else if(this.state == "DEFAULT"){
+                	this.state = "LITERAL";
+                	this.node = {
+                        parentNode: this.branch,
+                        value: curchar,
+                        nodes: []
+                    }
                 }
                 break;
             case '"':
             case "'":
-                if(escaped || (state == "QUOTED" && quoteMark != curchar)){
-                    node.value += curchar;
-                }else if(state == "DEFAULT"){
-                    quoteMark = curchar;
-                    state = "QUOTED";
+                if(this.escaped || (this.state == "QUOTED" && this.quoteMark != curchar)){
+                	this.node.value += curchar;
+                }else if(this.state == "DEFAULT"){
+                	this.quoteMark = curchar;
+                	this.state = "QUOTED";
                     node = {
-                        parentNode: branch,
+                        parentNode: this.branch,
                         value: "",
                         nodes: []
                     }
-                }else if(state == "QUOTED"){
-                    branch.nodes.push(node);
-                    state = "DEFAULT";
-                    node = {
-                        parentNode: branch,
+                }else if(this.state == "QUOTED"){
+                	this.branch.nodes.push(this.node);
+                	this.state = "DEFAULT";
+                	this.node = {
+                        parentNode: this.branch,
                         value: "",
                         nodes: []
                     }
-                }else if(state == "LITERAL"){
-                    branch.nodes.push(node);
-                    quoteMark = curchar;
-                    state = "QUOTED";
+                }else if(this.state == "LITERAL"){
+                	this.branch.nodes.push(this.node);
+                	this.quoteMark = curchar;
+                	this.state = "QUOTED";
                     node = {
-                        parentNode: branch,
+                        parentNode: this.branch,
                         value: "",
                         nodes: []
                     }
@@ -82,74 +100,81 @@ function parseLine(line){
                 break;
             case "[":
             case "(":
-                if(escaped || state=="QUOTED"){
-                    node.value += curchar;
+                if(this.escaped || this.state=="QUOTED"){
+                	this.node.value += curchar;
                     break;
                 }
 
-                if(state == "LITERAL"){
-                    branch.nodes.push(node);
+                if(this.state == "LITERAL"){
+                	this.branch.nodes.push(this.node);
                 }
                 
-                state = "DEFAULT";
-                branch = branch.nodes[branch.nodes.length-1] || tree;
+                this.state = "DEFAULT";
+                this.branch = this.branch.nodes[this.branch.nodes.length-1] || this.tree;
 
-
-                node = {
-                    parentNode: branch,
+                this.node = {
+                    parentNode: this.branch,
                     value: "",
                     nodes: []
                 }
                 break;
             case "]":
             case ")":
-                if(escaped || state=="QUOTED"){
-                    node.value += curchar;
+                if(this.escaped || this.state=="QUOTED"){
+                	this.node.value += curchar;
                     break;
                 }
                 
-                if(state == "LITERAL"){
-                    branch.nodes.push(node);
+                if(this.state == "LITERAL"){
+                	this.branch.nodes.push(this.node);
                 }
                 
-                state = "DEFAULT";
-                branch = branch.parentNode || branch;
+                this.state = "DEFAULT";
+                this.branch = this.branch.parentNode || this.branch;
                 
-                node = {
-                    parentNode: branch,
+                this.node = {
+                    parentNode: this.branch,
                     value: "",
                     nodes: []
                 }
                 break;
             default:
-                if(state == "LITERAL" || state == "QUOTED"){
-                    node.value += curchar;
+                if(this.state == "LITERAL" || this.state == "QUOTED"){
+                	this.node.value += curchar;
                 }else{
-                    state = "LITERAL";
-                    node = {
-                        parentNode: branch,
+                	this.state = "LITERAL";
+                	this.node = {
+                        parentNode: this.branch,
                         value: curchar,
                         nodes: []
                     }
                 }
         }
         
-        if(escaped && curchar != "\\"){
-            escaped = false;
+        if(this.escaped && curchar != "\\"){
+        	this.escaped = false;
         }
         
         i++;
     }
     
-    if(node.value){
-        if(state == "LITERAL" || state=="QUOTED"){
-            branch.nodes.push(node);
-        }
-    }
-    
-    return tree;
+}
+
+CommandParser.prototype.end = function(){
+	if(this.node.value){
+	    if(this.state == "LITERAL" || this.state=="QUOTED"){
+	    	this.branch.nodes.push(this.node);
+	    }
+	}
+	console.log(require("util").inspect(this.tree, false, 7));
 }
 
 
+var cp = new CommandParser();
 
-console.log(require("util").inspect(parseLine('14 FETCH (FL\\ AGS (\Seen \Deleted)) * 12 FETCH (RFC822 {342}'), false, 7));
+cp.write("14 FETCH (FL\\AGS (\\Seen \\Dele");
+cp.write("ted)) * 12 FETCH (RFC822 {342}");
+cp.end();
+
+//console.log(require("util").inspect(parseLine("14 FETCH (FL\\AGS (\\Seen \\Dele"), false, 7));
+
