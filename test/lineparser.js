@@ -162,5 +162,18 @@ exports["Structure tests"] = {
     	});
     	
     	lp.end("TAG1 BODY[DATE FLAGS (\\Seen \\Deleted)]");
+    },
+    
+    "Bound and unbound params": function(test){
+        var lp = new IMAPLineParser();
+        
+        test.expect(1);
+        
+        lp.on("line", function(data){
+            test.deepEqual(data, ["TAG1", {params: ["ALERT"]}, {value: "BODY", params:["TEXT", "HEADER"]}]);
+            test.done();
+        });
+        
+        lp.end("TAG1 [ALERT] BODY[TEXT HEADER]");
     }
 }
