@@ -95,6 +95,19 @@ exports["Type tests"] = {
         });
         
         lp.end("TAG1 NIL");
+    },
+    
+    "NIL string": function(test){
+        var lp = new IMAPLineParser();
+        
+        test.expect(1);
+        
+        lp.on("line", function(data){
+            test.deepEqual(data, ["TAG1", "NIL"]);
+            test.done();
+        });
+        
+        lp.end("TAG1 \"NIL\"");
     }
 }
 
