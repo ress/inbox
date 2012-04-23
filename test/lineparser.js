@@ -82,6 +82,19 @@ exports["Type tests"] = {
     	lp.write("TAG1 {123}");
     	lp.writeLiteral("ABC DEF\r\nGHI JKL");
     	lp.end("\"TAG2\"");
+    },
+    
+    "NIL value": function(test){
+        var lp = new IMAPLineParser();
+        
+        test.expect(1);
+        
+        lp.on("line", function(data){
+            test.deepEqual(data, ["TAG1", null]);
+            test.done();
+        });
+        
+        lp.end("TAG1 NIL");
     }
 }
 
