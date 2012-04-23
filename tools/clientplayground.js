@@ -17,7 +17,7 @@ imap.on("mailbox", function(mailbox){
     console.log("INBOX")
     console.log(mailbox)
     console.log(imap.getMailboxList());
-    imap.idle();
+    imap._send("UID FETCH 1:* ALL");
 });
 
 
