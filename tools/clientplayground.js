@@ -6,7 +6,7 @@ var gmail = {
         user: "test.nodemailer@gmail.com",
         pass: "Nodemailer123"
     },
-    debug: true
+    debug: !true
 };
 
 var imap = new IMAPClient(false, "imap.gmail.com", gmail);
@@ -15,11 +15,13 @@ imap.on("error", console.log);
 
 imap.on("mailbox", function(mailbox){
     imap.listMail(-2, console.log);
+    
+    imap.fetchMail(46, console.log);
+    
     imap.idle();
 });
 
 imap.on("message", function(message){
-    console.log("New message:");
     console.log(message)
 })
 
