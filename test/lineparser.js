@@ -75,7 +75,7 @@ exports["Type tests"] = {
     	test.expect(1);
     	
     	lp.on("line", function(data){
-    		test.deepEqual(data, ["TAG1", {literal:"{123}", value:"ABC DEF\r\nGHI JKL"}, "TAG2"]);
+    		test.deepEqual(data, ["TAG1", {literal: 123, value:"ABC DEF\r\nGHI JKL"}, "TAG2"]);
     		test.done();
     	});
     	

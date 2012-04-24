@@ -14,11 +14,17 @@ var imap = new IMAPClient(false, "imap.gmail.com", gmail);
 imap.on("error", console.log);
 
 imap.on("mailbox", function(mailbox){
-    console.log("INBOX")
-    console.log(mailbox)
-    console.log(imap.getMailboxList());
-    imap._send("UID FETCH 1:* ENVELOPE");
+    imap.listMail(-2, console.log);
+    imap.idle();
 });
 
+imap.on("message", function(message){
+    console.log("New message:");
+    console.log(message)
+})
+
+imap.on("messageData", function(message, data){
+    console.log(data.toString());
+});
 
 imap.connect();
