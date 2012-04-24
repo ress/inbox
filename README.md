@@ -1,4 +1,4 @@
-# simpleimap
+# inbox
 
 This is a work in progress IMAP client for node.js. Currently it does barely nothing
 so if you need something reliable, check out 
