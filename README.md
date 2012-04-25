@@ -46,12 +46,12 @@ where
 Example:
 
     var client = inbox.createConnection(port, "imap.gmail.com", {
-                        secureConnection: true,
-                        auth:{
-                            user: "text.nodemailer@gmail.com",
-                            pass: "Nodemailer123"
-                        }
-                    });
+        secureConnection: true,
+        auth:{
+            user: "text.nodemailer@gmail.com",
+            pass: "Nodemailer123"
+        }
+    });
 
 Once the connection object has been created, use connect() to create the actual connection.
 
