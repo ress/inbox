@@ -45,7 +45,7 @@ where
 
 Example:
 
-    var client = inbox.createConnection(port, "imap.gmail.com", {
+    var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
         auth:{
             user: "text.nodemailer@gmail.com",
