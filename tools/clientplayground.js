@@ -1,4 +1,4 @@
-var IMAPClient = require("../lib/client");
+var inbox = require("../lib/client");
 
 var gmail = {
     secureConnection: true,
@@ -6,27 +6,38 @@ var gmail = {
         user: "test.nodemailer@gmail.com",
         pass: "Nodemailer123"
     },
-    debug: !true
+    debug: true
 };
 
-var imap = new IMAPClient(false, "imap.gmail.com", gmail);
+var client = inbox.createConnection(false, "imap.gmail.com", gmail);
+client.connect();
 
-imap.on("error", console.log);
+client.on("error", console.log);
 
-imap.on("mailbox", function(mailbox){
-    imap.listMail(-2, console.log);
-    
-    imap.fetchMail(46, console.log);
-    
-    imap.idle();
+client.on("connect", function(){
+    client.openMailbox("INBOX", function(err, mailbox){
+        console.log(mailbox)
+        client.listMessages(-100, 20, console.log);
+        
+        client.fetchMessage(16);
+        
+    });
 });
 
-imap.on("message", function(message){
-    console.log(message)
-})
-
-imap.on("messageData", function(message, data){
-    console.log(data.toString());
+client.on("new", function(envelope){
+    console.log("NEW MAIL:");
+    console.log(envelope);
+    client.fetchMessage(envelope.UID);
 });
 
-imap.connect();
+client.on("message", function(envelope, message){
+    console.log(envelope);
+    
+    message.on("data", function(data){
+        console.log("MESSAGE: "+data.toString());
+    });
+    
+    message.on("end", function(){
+        console.log("MESSAGE COMPLETED");
+    });
+});
