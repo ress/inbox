@@ -48,7 +48,7 @@ Example:
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
         auth:{
-            user: "text.nodemailer@gmail.com",
+            user: "test.nodemailer@gmail.com",
             pass: "Nodemailer123"
         }
     });
@@ -131,4 +131,31 @@ You can listen for new incoming e-mails with event "new"
 
     client.on("new", function(message){
         console.log("New incoming message " + message.title);
+    });
+    
+## Complete example for listing newest 10 messages
+
+    var inbox = require("inbox");
+    
+    var client = inbox.createConnection(false, "imap.gmail.com", {
+        secureConnection: true,
+        auth:{
+            user: "test.nodemailer@gmail.com",
+            pass: "Nodemailer123"
+        }
+    });
+    
+    client.connect();
+    
+    client.on("connect", function(){
+        client.openMailbox("INBOX", function(error, mailbox){
+            if(error) throw error;
+            
+            client.listMessages(-10, function(err, messages){
+                messages.forEach(function(message){
+                    console.log(message.UID + ": " + message.title);
+                });
+            });
+
+        });
     });
