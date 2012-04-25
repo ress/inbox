@@ -16,7 +16,6 @@ Install from npm and run the tests (currently there are tests only for the parse
 
     npm install -dev inbox
     npm test inbox
-    
 
 ## API
 
@@ -62,6 +61,18 @@ When the connection has been successfully established a 'connect' event is emitt
     client.on("connect", function(){
         console.log("Successfully connected to server");
     });
+
+### List available mailboxes
+
+To get the list of available mailboxes, use
+
+    client.getMailboxList()
+
+which returns the mailbox list
+
+Example
+
+    console.log(client.getMailboxList());
 
 ### Select a mailbox
 
@@ -116,13 +127,12 @@ you need to fetch the message.
 Where
 
   * **uid** is the UID value for the mail
-  * **callback** is the callback function to run **after** the streaming has been completed. Gets an error parameter if error occured and a success parameter which indicates if a message was streamed or not.
+  * **callback** is the callback function to run **after** the streaming has been completed. Gets an error parameter if error occured and a message stream object or null if the message was not found
 
-Additionally you need to have a 'message' event set up.
+Example
 
-    client.on("message", function(message, stream){
-        console.log("Streaming " + message.UID);
-        stream.pipe(process.stdout); // output to console
+    client.fetchMessage(123, function(stream){
+        stream.pipe(process.stdout, {end: false}); // output to console
     });
 
 ### Wait for new messages
@@ -133,7 +143,9 @@ You can listen for new incoming e-mails with event "new"
         console.log("New incoming message " + message.title);
     });
     
-## Complete example for listing newest 10 messages
+## Complete example
+
+Listing newest 10 messages:
 
     var inbox = require("inbox");
     
