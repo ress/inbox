@@ -7,6 +7,8 @@ The project consists of two major parts
   * IMAP command parser (token based, more or less complete)
   * IMAP control for accessing mailboxes (under construction)
 
+[![Build Status](https://secure.travis-ci.org/andris9/inbox.png)](http://travis-ci.org/andris9/inbox)
+
 ## Installation
 
 Install from npm
