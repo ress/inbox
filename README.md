@@ -1,9 +1,6 @@
 # inbox
 
-This is a work in progress IMAP client for node.js. Currently it does barely nothing
-so if you need something reliable, check out 
-[/mscdex/node-imap](https://github.com/mscdex/node-imap).
-
+This is a work in progress IMAP client for node.js. 
 
 The project consists of two major parts
 
@@ -12,19 +9,17 @@ The project consists of two major parts
 
 ## Installation
 
-Install from npm and run the tests (currently there are tests only for the parser)
+Install from npm
 
-    npm install -dev inbox
-    npm test inbox
+    npm install inbox
 
 ## API
 
-**NB!** This API is preliminary and subject to change.
+**NB!** This API is preliminary and may change.
 
 Use **inbox** module
 
     var inbox = require("inbox");
-    
 
 ### Create new IMAP connection
 
