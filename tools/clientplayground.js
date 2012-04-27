@@ -30,7 +30,7 @@ client.on("connect", function(){
         
         var stream = client.createMessageStream(52);
         client.createMessageStream(52).pipe(process.stdout, {end: false});
-        
+         
     });
     
     // on new messages, print to console

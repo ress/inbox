@@ -85,6 +85,15 @@ Example
 
     console.log(client.getMailboxList());
 
+Output:
+
+    { 
+        INBOX: { name: 'INBOX', inbox: true },
+        Drafts: { name: 'Drafts' },
+        Sent: { name: 'Sent', disabled: true},
+        Junk: { name: 'Junk' }
+    }
+
 ### Select a mailbox
 
 Before you can check mailbox contents, you need to select one with
