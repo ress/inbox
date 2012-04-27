@@ -131,6 +131,23 @@ Example
         });
     });
 
+### Fetch message details
+
+To fetch message data (flags, title, etc) for a specific message, use
+
+    client.fetchData(uid, callback)
+    
+Where
+
+  * **uid** is the UID value for the mail
+  * **callback** is the callback function to with the message data object (or null if the message was not found). Gets an error parameter if error occured
+
+Example
+
+    client.fetchData(123, function(error, message){
+        console.log(message.flags);
+    });
+
 ### Fetch message contents
 
 Message listing only retrieves the envelope part of the message. To get the full RFC822 message body
@@ -145,9 +162,12 @@ Where
 
 Example
 
-    client.fetchMessage(123, function(stream){
+    client.fetchMessage(123, function(error, stream){
         stream.pipe(process.stdout, {end: false}); // output to console
     });
+
+**NB!* If the opened mailbox is not in read-only mode, the message will be 
+automatically marked as read (\Seen flag is set) when the message is fetched.
 
 ### Wait for new messages
 

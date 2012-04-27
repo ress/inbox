@@ -13,7 +13,7 @@ var client = inbox.createConnection(false, "imap.gmail.com", {
 client.connect();
 
 client.on("connect", function(){
-    console.log(client.getMailboxList());
+    console.log(util.inspect(client.getMailboxList(), false, 7));
     client.openMailbox("INBOX", function(error, mailbox){
         if(error) throw error;
         
@@ -22,8 +22,7 @@ client.on("connect", function(){
             messages.forEach(function(message){
                 console.log(message.UID+": "+message.title);
             });
-        });
-        
+        });        
     });
     
     // on new messages, print to console

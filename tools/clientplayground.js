@@ -24,6 +24,10 @@ client.on("connect", function(){
             });
         });
         
+        client.fetchData(52, function(err, message){
+            console.log(message); 
+        });
+        
     });
     
     // on new messages, print to console
