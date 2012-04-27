@@ -41,6 +41,7 @@ where
   * **options.auth** is an authentication object
   * **options.auth.user** is the IMAP username
   * **options.auth.pass** is the IMAP password
+  * **options.auth.XOAuthToken** (optional) is either a String or *inbox.createXOAuthGenerator* object
 
 Example:
 
@@ -52,6 +53,19 @@ Example:
         }
     });
 
+Or when login with XOAUTH (see examples/xoauth.js)
+    
+    var client = inbox.createConnection(false, "imap.gmail.com", {
+        secureConnection: true,
+        auth:{
+            XOAuthToken: inbox.createXOAuthGenerator({
+                user: "test.nodemailer@gmail.com",
+                token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
+                tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+            })
+        }
+    });
+        
 Once the connection object has been created, use connect() to create the actual connection.
 
     client.connect();

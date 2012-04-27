@@ -1,11 +1,15 @@
+
 var inbox = require(".."),
     util = require("util");
     
 var client = inbox.createConnection(false, "imap.gmail.com", {
     secureConnection: true,
     auth:{
-        user: "test.nodemailer@gmail.com",
-        pass: "Nodemailer123"
+        XOAuthToken: inbox.createXOAuthGenerator({
+            user: "test.nodemailer@gmail.com",
+            token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
+            tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+        })
     },
     debug: true
 });
