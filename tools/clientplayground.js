@@ -28,6 +28,9 @@ client.on("connect", function(){
             console.log(message); 
         });
         
+        var stream = client.createMessageStream(52);
+        client.createMessageStream(52).pipe(process.stdout, {end: false});
+        
     });
     
     // on new messages, print to console
@@ -35,9 +38,7 @@ client.on("connect", function(){
         console.log("New message:");
         console.log(util.inspect(message, false, 7));
         
-        client.fetchMessage(message.UID, function(err, stream){
-            stream.pipe(process.stdout, {end: false}); 
-        });
+        client.createMessageStream(message.UID).pipe(process.stdout, {end: false});
         
     });
 });

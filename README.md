@@ -153,18 +153,15 @@ Example
 Message listing only retrieves the envelope part of the message. To get the full RFC822 message body
 you need to fetch the message.
 
-    client.fetchMessage(uid, callback)
+    var messageStream = client.createMessageStream(uid)
     
 Where
 
   * **uid** is the UID value for the mail
-  * **callback** is the callback function to run **after** the streaming has been completed. Gets an error parameter if error occured and a message stream object or null if the message was not found
 
-Example
+Example (output message contents to console)
 
-    client.fetchMessage(123, function(error, stream){
-        stream.pipe(process.stdout, {end: false}); // output to console
-    });
+    client.reateMessageStream(123).pipe(process.stdout, {end: false});
 
 **NB!* If the opened mailbox is not in read-only mode, the message will be 
 automatically marked as read (\Seen flag is set) when the message is fetched.
