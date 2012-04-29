@@ -167,7 +167,7 @@ Where
 
 Example (output message contents to console)
 
-    client.reateMessageStream(123).pipe(process.stdout, {end: false});
+    client.createMessageStream(123).pipe(process.stdout, {end: false});
 
 **NB!* If the opened mailbox is not in read-only mode, the message will be 
 automatically marked as read (\Seen flag is set) when the message is fetched.
