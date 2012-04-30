@@ -137,6 +137,55 @@ Example
         });
     });
 
+Example output for a message listing
+
+    [
+        { 
+            // if uidvalidity changes, all uid values are void!
+            UIDValidity: '664399135',
+            
+            // uid value of the message
+            UID: 52,
+            
+            // message flags (Array)
+            flags: [ '\\Flagged', '\\Seen' ],
+            
+            // date of the message (Date object)
+            date: Wed, 25 Apr 2012 12:23:05 GMT,
+            
+            title: 'This is a message, may contain unicode symbols',
+            
+            // single "from:" address
+            from: { 
+                name: 'Andris Reinman', 
+                address: 'andris.reinman@gmail.com' 
+            },
+            
+            // an array of "to:" addresses
+            to: [
+                {
+                    name: 'test nodemailer',
+                    address: 'test.nodemailer@gmail.com'
+                }
+            ],
+            
+            // an array of "cc:" addresses
+            cc: [
+                {
+                    name: 'test nodemailer',
+                    address: 'test.nodemailer@gmail.com'
+                }
+            ],
+            
+            messageId: '<04541AB5-9FBD-4255-81AA-18FE67CB97E5@gmail.com>' 
+        },
+        ...
+    ]
+    
+**NB!** if some properties are not present in a message, it may be not included
+in the message object - for example, if there are no "cc:" addresses listed, 
+there is no "cc" field in the message object 
+
 ### Fetch message details
 
 To fetch message data (flags, title, etc) for a specific message, use
