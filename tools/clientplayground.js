@@ -28,9 +28,13 @@ client.on("connect", function(){
             console.log(message); 
         });
         
-        var stream = client.createMessageStream(52);
-        client.createMessageStream(52).pipe(process.stdout, {end: false});
-         
+        //var stream = client.createMessageStream(52);
+        //client.createMessageStream(52).pipe(process.stdout, {end: false});
+        
+        client.updateFlags(52, ["\\Answered", "\\Flagged"], "+", console.log)
+        client.removeFlags(52, ["\\Answered", "\\Flagged"], console.log)
+        client.addFlags(52, ["\\Flagged"], console.log)
+        
     });
     
     // on new messages, print to console
