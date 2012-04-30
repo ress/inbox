@@ -169,8 +169,44 @@ Example (output message contents to console)
 
     client.reateMessageStream(123).pipe(process.stdout, {end: false});
 
-**NB!* If the opened mailbox is not in read-only mode, the message will be 
+**NB!** If the opened mailbox is not in read-only mode, the message will be 
 automatically marked as read (\Seen flag is set) when the message is fetched.
+
+### Message flags
+
+You can add and remove message flags like `\Seen` or `\Answered` with `client.addFlags()` and `client.removeFlags()`
+
+**Add flags**
+
+    client.addFlags(uid, flags, callback)
+
+Where
+
+  * **uid** is the message identifier
+  * **flags** is the array of flags to be added
+  * **callback** *(err, flags)* is the callback to run, gets message flags array as a parameter 
+
+**Remove flags**
+
+    client.removeFlags(uid, flags, callback)
+
+Where
+
+  * **uid** is the message identifier
+  * **flags** is the array of flags to be removed
+  * **callback** *(err, flags)* is the callback to run, gets message flags array as a parameter
+
+Example
+
+    // add \Seen and \Flagged flag to a message
+    client.addFlags(123, ["\\Seen", "\\Flagged"], function(err, flags){
+        console.log("Current flags for a message: ", flags);
+    });
+    
+    // remove \Flagged flag from a message
+    client.removeFlags(123, ["\\Flagged"], function(err, flags){
+        console.log("Current flags for a message: ", flags);
+    });
 
 ### Wait for new messages
 
