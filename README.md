@@ -105,7 +105,7 @@ Where
   * **name** is the name of the mailbox (ie. "INBOX")
   * **options** is an optional options object
   * **options.readOnly** - if set to true, open the mailbox in read-only mode (downloading messages does not update seen/unseen flag)
-  * **callback** is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a mailbox param with the properties of the opened mailbox.
+  * **callback** *(error, mailbox)* is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a mailbox param with the properties of the opened mailbox.
 
 Example
 
@@ -126,7 +126,7 @@ Where
 
   * **from** is the index of the first message (0 based), you can use negative numbers to count from the end (-10 indicates the 10 last messages)
   * **limit** defines the maximum count of messages to fetch, if not set or 0 all messages from the starting position will be included
-  * **callback** is the callback function to run with the message array
+  * **callback** *(error, messages)* is the callback function to run with the message array
   
 Example
 
@@ -146,7 +146,7 @@ To fetch message data (flags, title, etc) for a specific message, use
 Where
 
   * **uid** is the UID value for the mail
-  * **callback** is the callback function to with the message data object (or null if the message was not found). Gets an error parameter if error occured
+  * **callback** *(error, message)* is the callback function to with the message data object (or null if the message was not found). Gets an error parameter if error occured
 
 Example
 
@@ -184,7 +184,7 @@ Where
 
   * **uid** is the message identifier
   * **flags** is the array of flags to be added
-  * **callback** *(err, flags)* is the callback to run, gets message flags array as a parameter 
+  * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter 
 
 **Remove flags**
 
@@ -194,7 +194,7 @@ Where
 
   * **uid** is the message identifier
   * **flags** is the array of flags to be removed
-  * **callback** *(err, flags)* is the callback to run, gets message flags array as a parameter
+  * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter
 
 Example
 
