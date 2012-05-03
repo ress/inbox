@@ -132,11 +132,11 @@ Example:
 
 Before you can check mailbox contents, you need to select one with
 
-    client.openMailbox(name[, options], callback)
+    client.openMailbox(path[, options], callback)
     
 Where
 
-  * **name** is the name of the mailbox (ie. "INBOX") or a mailbox object
+  * **path** is the path to the mailbox (ie. "INBOX" or "INBOX/Arhiiv") or a mailbox object
   * **options** is an optional options object
   * **options.readOnly** - if set to true, open the mailbox in read-only mode (downloading messages does not update seen/unseen flag)
   * **callback** *(error, info)* is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a info param with the properties of the opened mailbox.
