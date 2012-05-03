@@ -77,7 +77,7 @@ When the connection has been successfully established a 'connect' event is emitt
 
 To list the available mailboxes use 
 
-    client.listRoot(callback)
+    client.listMailboxes(callback)
     
 Where
 
@@ -93,17 +93,38 @@ Mailbox objects have the following properties
 
 Additionally mailboxes have the following methods
 
+  * **open** *([options, ]callback)* - open the mailbox (shorthand for *client.openMailbox*)
   * **listChildren** *(callback)* - if the mailbox has children (*hasChildren* is true), lists the child mailboxes
 
 Example:
 
-    client.listRoot(function(error, mailboxes){
+    client.listMailboxes(function(error, mailboxes){
         for(var i=0, len = mailboxes.length; i<len; i++){
             if(mailboxes[i].hasChildren){
                 mailboxes[i].listChildren(function(error, children){
                     console.log(children);
                 });
             }
+        }
+    });
+
+### Fetch a specified mailbox object
+
+If you need to access a specific mailbox object (for creating or listing child 
+mailboxes etc.), you can do it with
+
+    client.getMailbox(path, callback)
+    
+Where
+
+  * **path** is the mailbox directory path
+  * **callback** *(error, mailbox)* is the callback function
+
+Example:
+
+    client.getMailbox("INBOX.Arhiiv", function(error, mailbox){
+        if(mailbox && mailbox.hasChildren){
+            mailbox.listChildren(console.log);
         }
     });
 
@@ -115,17 +136,17 @@ Before you can check mailbox contents, you need to select one with
     
 Where
 
-  * **name** is the name of the mailbox (ie. "INBOX")
+  * **name** is the name of the mailbox (ie. "INBOX") or a mailbox object
   * **options** is an optional options object
   * **options.readOnly** - if set to true, open the mailbox in read-only mode (downloading messages does not update seen/unseen flag)
-  * **callback** *(error, mailbox)* is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a mailbox param with the properties of the opened mailbox.
+  * **callback** *(error, info)* is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a info param with the properties of the opened mailbox.
 
 Example
 
     client.on("connect", function(){
-        client.openMailbox("INBOX", function(error, mailbox){
+        client.openMailbox("INBOX", function(error, info){
             if(error) throw error;
-            console.log("Message count in INBOX: " + mailbox.count);
+            console.log("Message count in INBOX: " + info.count);
         });
     });
 
@@ -295,7 +316,7 @@ Listing newest 10 messages:
     client.connect();
     
     client.on("connect", function(){
-        client.openMailbox("INBOX", function(error, mailbox){
+        client.openMailbox("INBOX", function(error, info){
             if(error) throw error;
             
             client.listMessages(-10, function(err, messages){

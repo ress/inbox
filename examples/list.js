@@ -14,7 +14,7 @@ client.connect();
 
 client.on("connect", function(){
     
-    client.listRoot(console.log);
+    client.listMailboxes(console.log);
     
     client.openMailbox("INBOX", function(error, mailbox){
         if(error) throw error;
@@ -24,7 +24,7 @@ client.on("connect", function(){
             messages.forEach(function(message){
                 console.log(message.UID+": "+message.title);
             });
-        });        
+        });
     });
     
     // on new messages, print to console

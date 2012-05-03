@@ -38,7 +38,7 @@ client.on("connect", function(){
         
         function walkMailboxes(name, level, node){
             level = level || 0;
-            (node.listChildren || node.listRoot).call(node, function(err, list){
+            (node.listChildren || node.listMailboxes).call(node, function(err, list){
                 if(err){return;}
                 console.log("> "+name);
                 for(var i=0; i<list.length; i++){
@@ -47,10 +47,23 @@ client.on("connect", function(){
                         walkMailboxes(list[i].name, level+1, list[i]);
                    }
                 }
-            })
+            });
         }
         
-        walkMailboxes("ROOT", 0, client);
+        console.log(12)
+        client.getMailbox("[Gmail]/Saadetud kirjad", console.log);
+        
+        //walkMailboxes("ROOT", 0, client);
+        /*
+        client.listMailboxes(function(error, mailboxes){
+            console.log(mailboxes)
+            mailboxes.forEach(function(mailbox){
+                if(mailbox.hasChildren){
+                    mailbox.createChild("andristest", console.log);
+                }
+            })
+        });
+        */
         
         //client.listChildren(console.log)
         

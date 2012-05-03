@@ -21,7 +21,9 @@ client.on("error", function(err){
 });
 
 client.on("connect", function(){
-    console.log(client.getMailboxList());
+
+    client.listMailboxes(console.log);
+
     client.openMailbox("INBOX", function(error, mailbox){
         if(error) throw error;
         
