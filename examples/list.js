@@ -13,7 +13,9 @@ var client = inbox.createConnection(false, "imap.gmail.com", {
 client.connect();
 
 client.on("connect", function(){
-    console.log(util.inspect(client.getMailboxList(), false, 7));
+    
+    client.listRoot(console.log);
+    
     client.openMailbox("INBOX", function(error, mailbox){
         if(error) throw error;
         

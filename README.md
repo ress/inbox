@@ -75,24 +75,37 @@ When the connection has been successfully established a 'connect' event is emitt
 
 ### List available mailboxes
 
-To get the list of available mailboxes, use
+To list the available mailboxes use 
 
-    client.getMailboxList()
+    client.listRoot(callback)
+    
+Where
 
-which returns the mailbox list
+  * **callback** *(error, mailboxes)* returns a list of root mailbox object
+  
+Mailbox objects have the following properties
 
-Example
+  * **name** - the display name of the mailbox
+  * **path** - the actual name of the mailbox, use it for opening the mailbox
+  * **type** - the type of the mailbox (if server hints about it)
+  * **hasChildren** - boolean indicator, if true, has child mailboxes
+  * **disabled** - boolean indicator, if true, can not be selected
 
-    console.log(client.getMailboxList());
+Additionally mailboxes have the following methods
 
-Output:
+  * **listChildren** *(callback)* - if the mailbox has children (*hasChildren* is true), lists the child mailboxes
 
-    { 
-        INBOX: { name: 'INBOX', inbox: true },
-        Drafts: { name: 'Drafts' },
-        Sent: { name: 'Sent', disabled: true},
-        Junk: { name: 'Junk' }
-    }
+Example:
+
+    client.listRoot(function(error, mailboxes){
+        for(var i=0, len = mailboxes.length; i<len; i++){
+            if(mailboxes[i].hasChildren){
+                mailboxes[i].listChildren(function(error, children){
+                    console.log(children);
+                });
+            }
+        }
+    });
 
 ### Select a mailbox
 
