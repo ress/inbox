@@ -40,22 +40,33 @@ var sessionCounter = 0,
                 socket.end();
             }
         });
-    
-        var target = (targetSecure?tls:net).connect(targetPort, targetHost, function() {
-            
-            console.log("Server connected");
-            
-            socket = targetSecure ? target.socket : target;
-            
-            socket.setKeepAlive(true);
-    
-            if(client && !client.destroyed){
-                client.pipe(target);
-            }else{
-                socket.end();
-            }
-            
-        });
+    console.log(targetPort, targetHost)
+        var params = [targetPort, targetHost, function() {
+                
+                console.log("Server connected");
+                
+                socket = targetSecure ? target.socket : target;
+                
+                socket.setKeepAlive(true);
+        
+                if(client && !client.destroyed){
+                    client.pipe(target);
+                }else{
+                    socket.end();
+                }
+                
+            }];
+
+        if(targetSecure){
+            params.shift();
+            params.shift();
+            params.unshift({
+                port: targetPort, 
+                host: targetHost
+            });
+        }
+
+        var target = (targetSecure?tls:net).connect.apply((targetSecure?tls:net), params);
             
         target.on('data', function(chunk) {
             var str = (chunk || "").toString("utf-8").trim();
