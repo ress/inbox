@@ -203,3 +203,19 @@ exports["Structure tests"] = {
         lp.end("TAG1 [ALERT] BODY[TEXT HEADER]");
     }
 }
+
+exports["Logging tests"] = {
+    "Simple log": function(test){
+        var lp = new IMAPLineParser();
+        
+        test.expect(1);
+        
+        lp.on("log", function(data){
+            test.equal(data, "TAG1 FETCH (NAME HEADER BODY)");
+            test.done();
+        });
+        
+        lp.write("TAG1 ")
+        lp.end("FETCH (NAME HEADER BODY)");
+    }
+}
