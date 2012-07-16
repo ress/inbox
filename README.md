@@ -291,6 +291,27 @@ Example
         console.log("Current flags for a message: ", flags);
     });
 
+### Upload a message
+
+You can upload a message to current mailbox with `client.storeMessage()`
+
+    client.storeMessage(message[, flags], callback)
+
+Where
+
+  * **message** is the message to be uploaded either as a string or a Buffer.
+  * **flags** is an array of flags to set to the message (ie. `["\\Seen"]`)
+  * **callback** is the callback function, gets message UID and UID and UIDValitity as a param
+
+Example
+
+    client.storeMessage("From: ....", ["\\Seen"], function(err, params){
+        console.log(err || params.UIDValidity +", "+ params.UID);
+    });
+
+When adding a message to the mailbox, also new message event is raised, after 
+the mail has been stored.
+
 ### Wait for new messages
 
 You can listen for new incoming e-mails with event "new"
