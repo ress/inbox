@@ -316,6 +316,59 @@ Example
 When adding a message to the mailbox, also new message event is raised, after 
 the mail has been stored.
 
+### Copy a message
+
+You can copy a message from current mailbox to a selected one with `client.copyMessage()`
+
+    client.copyMessage(uid, destination, callback)
+
+Where
+
+  * **uid** is the message identifier.
+  * **destination** is the path to the destination mailbox
+  * **callback** is the callback function
+
+Example
+
+    client.copyMessage(123, "[GMail]/Junk", function(err){
+        console.log(err || "success, copied to junk");
+    });
+
+### Move a message
+
+You can move a message from current mailbox to a selected one with `client.moveMessage()`
+
+    client.moveMessage(uid, destination, callback)
+
+Where
+
+  * **uid** is the message identifier.
+  * **destination** is the path to the destination mailbox
+  * **callback** is the callback function
+
+Example
+
+    client.moveMessage(123, "[GMail]/Junk", function(err){
+        console.log(err || "success, moved to junk");
+    });
+
+### Delete a message
+
+You can delete a message from current mailbox with `client.deleteMessage()`
+
+    client.deleteMessage(uid, callback)
+
+Where
+
+  * **uid** is the message identifier.
+  * **callback** is the callback function
+
+Example
+
+    client.deleteMessage(123, function(err){
+        console.log(err || "success, message deleted");
+    });
+
 ### Wait for new messages
 
 You can listen for new incoming e-mails with event "new"
