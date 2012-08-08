@@ -52,8 +52,10 @@ Example:
         }
     });
 
-Or when login with XOAUTH (see examples/xoauth.js)
+Or when login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js)
     
+
+    // 3-legged- oauth
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
         auth:{
@@ -61,6 +63,21 @@ Or when login with XOAUTH (see examples/xoauth.js)
                 user: "test.nodemailer@gmail.com",
                 token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
                 tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+            })
+        }
+    });
+
+With 3-legged OAuth, consumerKey and consumerSecret both default to "anonymous" while with 2-legged they need to have proper values.
+
+    // 2-legged- oauth
+    var client = inbox.createConnection(false, "imap.gmail.com", {
+        secureConnection: true,
+        auth:{
+            XOAuthToken: inbox.createXOAuthGenerator({
+                user: "test.nodemailer@gmail.com",
+                requestorId: "test.nodemailer@gmail.com",
+                consumerKey: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
+                consumerSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
             })
         }
     });

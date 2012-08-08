@@ -6,9 +6,10 @@ var client = inbox.createConnection(false, "imap.gmail.com", {
     secureConnection: true,
     auth:{
         XOAuthToken: inbox.createXOAuthGenerator({
-            user: "test.nodemailer@gmail.com",
-            token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
-            tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+            user: "user@example.com",
+            requestorId: "user@example.com", // required for 2 legged oauth
+            consumerKey: "abc",
+            consumerSecret: "def"
         })
     },
     debug: true
