@@ -24,10 +24,8 @@ client.on("connect", function(){
 
                 client.deleteMessage(message.UID, function(error){
                     console.log(arguments);
-                })
-            })
-        })
-
+                });
+            });
+        });
     });
-    
 });
