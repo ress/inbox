@@ -38,6 +38,7 @@ where
   * **options.auth** is an authentication object
   * **options.auth.user** is the IMAP username
   * **options.auth.pass** is the IMAP password
+  * **options.auth.XOAuth2** (optional) is either an object with {user, clientId, clientSecret, refreshToken} or *xoauth2.createXOAuth2Generator* object, see [xoauth2](https://github.com/andris9/xoauth2) for details
   * **options.auth.XOAuthToken** (optional) is either a String or *inbox.createXOAuthGenerator* object
   * **options.clientId** is optional client ID params object
   * **options.clientId.name** is is the name param etc. see [rfc 2971](http://tools.ietf.org/html/rfc2971#section-3.3) for possible field names
@@ -51,6 +52,24 @@ Example:
             pass: "Nodemailer123"
         }
     });
+
+Or when login with XOAUTH2 (see examples/xoauth2)
+    
+    // XOAUTH2
+    var client = inbox.createConnection(false, "imap.gmail.com", {
+        secureConnection: true,
+        auth:{
+            XOAuth2:{
+                user: "example.user@gmail.com",
+                clientId: "8819981768.apps.googleusercontent.com",
+                clientSecret: "{client_secret}",
+                refreshToken: "1/xEoDL4iW3cxlI7yDbSRFYNG01kVKM2C-259HOF2aQbI",
+                accessToken: "vF9dft4qmTc2Nvb3RlckBhdHRhdmlzdGEuY29tCg==",
+                timeout: 3600
+            }
+        }
+    });
+
 
 Or when login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js)
     
