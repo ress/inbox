@@ -299,6 +299,15 @@ automatically marked as read (\Seen flag is set) when the message is fetched.
 
 You can add and remove message flags like `\Seen` or `\Answered` with `client.addFlags()` and `client.removeFlags()`
 
+**List flags**
+
+    client.fetchFlags(uid, callback)
+
+Where
+
+  * **uid** is the message identifier
+  * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter 
+
 **Add flags**
 
     client.addFlags(uid, flags, callback)
