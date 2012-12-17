@@ -260,6 +260,43 @@ Example output for a message listing
 in the message object - for example, if there are no "cc:" addresses listed, 
 there is no "cc" field in the message object 
 
+### Listing flags
+
+As a shorthand listing, you can also list only UID and Flags pairs
+
+    client.listFlags(from[, limit], callback)
+
+Where
+
+  * **from** is the index of the first message (0 based), you can use negative numbers to count from the end (-10 indicates the 10 last messages)
+  * **limit** defines the maximum count of messages to fetch, if not set or 0 all messages from the starting position will be included
+  * **callback** *(error, messages)* is the callback function to run with the message array
+  
+Example
+
+    // list flags for newest 10 messages
+    client.listFlags(-10, function(err, messages){
+        messages.forEach(function(message){
+            console.log(message.UID, message.flags);
+        });
+    });
+
+Example output for a message listing
+
+    [
+        { 
+            // if uidvalidity changes, all uid values are void!
+            UIDValidity: '664399135',
+            
+            // uid value of the message
+            UID: 52,
+            
+            // message flags (Array)
+            flags: [ '\\Flagged', '\\Seen' ]
+        },
+        ...
+    ] 
+
 ### Fetch message details
 
 To fetch message data (flags, title, etc) for a specific message, use

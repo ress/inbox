@@ -7,7 +7,7 @@ var client = inbox.createConnection(false, "imap.gmail.com", {
         user: "test.nodemailer@gmail.com",
         pass: "Nodemailer123"
     },
-    debug: false
+    debug: true
 });
 
 client.connect();
@@ -23,6 +23,12 @@ client.on("connect", function(){
         client.listMessages(-10, function(err, messages){
             messages.forEach(function(message){
                 console.log(message.UID+": "+message.title);
+            });
+
+            client.listFlags(-10, function(err, messages){
+                messages.forEach(function(message){
+                    console.log(message);
+                });
             });
         });
     });
