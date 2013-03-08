@@ -20,14 +20,15 @@ Install from npm
 **NB!** This API is preliminary and may change.
 
 Use **inbox** module
-
+```javascript
     var inbox = require("inbox");
-
+```
 ### Create new IMAP connection
 
 Create connection object with 
-
+```javascript
     inbox.createConnection(port, host, options)
+```
 
 where
 
@@ -44,7 +45,7 @@ where
   * **options.clientId.name** is is the name param etc. see [rfc 2971](http://tools.ietf.org/html/rfc2971#section-3.3) for possible field names
 
 Example:
-
+```javascript
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
         auth:{
@@ -52,9 +53,10 @@ Example:
             pass: "Nodemailer123"
         }
     });
+```
 
-Or when login with XOAUTH2 (see examples/xoauth2)
-    
+Or for login with XOAUTH2 (see examples/xoauth2)
+```javascript    
     // XOAUTH2
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
@@ -69,11 +71,12 @@ Or when login with XOAUTH2 (see examples/xoauth2)
             }
         }
     });
+```
 
 
-Or when login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js)
+Or for login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js)
     
-
+```javascript
     // 3-legged- oauth
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
@@ -85,9 +88,10 @@ Or when login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js
             })
         }
     });
+```
 
-With 3-legged OAuth, consumerKey and consumerSecret both default to "anonymous" while with 2-legged they need to have proper values.
-
+With 2-legged OAuth, consumerKey and consumerSecret need to have proper values, vs 3-legged OAuth where both default to "anonymous".
+```javascript
     // 2-legged- oauth
     var client = inbox.createConnection(false, "imap.gmail.com", {
         secureConnection: true,
@@ -100,22 +104,26 @@ With 3-legged OAuth, consumerKey and consumerSecret both default to "anonymous" 
             })
         }
     });
+```
         
 Once the connection object has been created, use connect() to create the actual connection.
-
+```javascript
     client.connect();
+```
     
 When the connection has been successfully established a 'connect' event is emitted.
-
+```javascript
     client.on("connect", function(){
         console.log("Successfully connected to server");
     });
+```
 
 ### List available mailboxes
 
 To list the available mailboxes use 
-
+```javascript
     client.listMailboxes(callback)
+```
     
 Where
 
@@ -135,7 +143,7 @@ Additionally mailboxes have the following methods
   * **listChildren** *(callback)* - if the mailbox has children (*hasChildren* is true), lists the child mailboxes
 
 Example:
-
+```javascript
     client.listMailboxes(function(error, mailboxes){
         for(var i=0, len = mailboxes.length; i<len; i++){
             if(mailboxes[i].hasChildren){
@@ -145,13 +153,15 @@ Example:
             }
         }
     });
+```
 
 ### Fetch a specified mailbox object
 
 If you need to access a specific mailbox object (for creating or listing child 
 mailboxes etc.), you can do it with
-
+```javascript
     client.getMailbox(path, callback)
+```
     
 Where
 
@@ -159,18 +169,20 @@ Where
   * **callback** *(error, mailbox)* is the callback function
 
 Example:
-
+```javascript
     client.getMailbox("INBOX.Arhiiv", function(error, mailbox){
         if(mailbox && mailbox.hasChildren){
             mailbox.listChildren(console.log);
         }
     });
+```
 
 ### Select a mailbox
 
 Before you can check mailbox contents, you need to select one with
-
+```javascript
     client.openMailbox(path[, options], callback)
+```
     
 Where
 
@@ -180,19 +192,21 @@ Where
   * **callback** *(error, info)* is a callback function to run after the mailbox has been opened. Has an error param in case the opening failed and a info param with the properties of the opened mailbox.
 
 Example
-
+```javascript
     client.on("connect", function(){
         client.openMailbox("INBOX", function(error, info){
             if(error) throw error;
             console.log("Message count in INBOX: " + info.count);
         });
     });
+```
 
 ### Listing e-mails
 
 Once a mailbox has been opened you can list contained e-mails with
-
+```javascript
     client.listMessages(from[, limit], callback)
+```
 
 Where
 
@@ -201,16 +215,17 @@ Where
   * **callback** *(error, messages)* is the callback function to run with the message array
   
 Example
-
+```javascript
     // list newest 10 messages
     client.listMessages(-10, function(err, messages){
         messages.forEach(function(message){
             console.log(message.UID + ": " + message.title);
         });
     });
+```
 
 Example output for a message listing
-
+```javascript
     [
         { 
             // if uidvalidity changes, all uid values are void!
@@ -255,16 +270,18 @@ Example output for a message listing
         },
         ...
     ]
+```
     
-**NB!** if some properties are not present in a message, it may be not included
+**NB!** If some properties are not present in a message, it may be not included
 in the message object - for example, if there are no "cc:" addresses listed, 
-there is no "cc" field in the message object 
+there is no "cc" field in the message object.
 
 ### Listing flags
 
 As a shorthand listing, you can also list only UID and Flags pairs
-
+```javascript
     client.listFlags(from[, limit], callback)
+```
 
 Where
 
@@ -273,16 +290,17 @@ Where
   * **callback** *(error, messages)* is the callback function to run with the message array
   
 Example
-
+```javascript
     // list flags for newest 10 messages
     client.listFlags(-10, function(err, messages){
         messages.forEach(function(message){
             console.log(message.UID, message.flags);
         });
     });
+```
 
 Example output for a message listing
-
+```javascript
     [
         { 
             // if uidvalidity changes, all uid values are void!
@@ -296,12 +314,14 @@ Example output for a message listing
         },
         ...
     ] 
+```
 
 ### Fetch message details
 
 To fetch message data (flags, title, etc) for a specific message, use
-
+```javascript
     client.fetchData(uid, callback)
+```
     
 Where
 
@@ -309,25 +329,28 @@ Where
   * **callback** *(error, message)* is the callback function to with the message data object (or null if the message was not found). Gets an error parameter if error occured
 
 Example
-
+```javascript
     client.fetchData(123, function(error, message){
         console.log(message.flags);
     });
+```
 
 ### Fetch message contents
 
 Message listing only retrieves the envelope part of the message. To get the full RFC822 message body
 you need to fetch the message.
-
+```javascript
     var messageStream = client.createMessageStream(uid)
+```
     
 Where
 
   * **uid** is the UID value for the mail
 
 Example (output message contents to console)
-
+```javascript
     client.createMessageStream(123).pipe(process.stdout, {end: false});
+```
 
 **NB!** If the opened mailbox is not in read-only mode, the message will be 
 automatically marked as read (\Seen flag is set) when the message is fetched.
@@ -337,8 +360,9 @@ automatically marked as read (\Seen flag is set) when the message is fetched.
 You can add and remove message flags like `\Seen` or `\Answered` with `client.addFlags()` and `client.removeFlags()`
 
 **List flags**
-
+```javascript
     client.fetchFlags(uid, callback)
+```
 
 Where
 
@@ -346,8 +370,9 @@ Where
   * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter 
 
 **Add flags**
-
+```javascript
     client.addFlags(uid, flags, callback)
+```
 
 Where
 
@@ -356,8 +381,9 @@ Where
   * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter 
 
 **Remove flags**
-
+```javascript
     client.removeFlags(uid, flags, callback)
+```
 
 Where
 
@@ -366,7 +392,7 @@ Where
   * **callback** *(error, flags)* is the callback to run, gets message flags array as a parameter
 
 Example
-
+```javascript
     // add \Seen and \Flagged flag to a message
     client.addFlags(123, ["\\Seen", "\\Flagged"], function(err, flags){
         console.log("Current flags for a message: ", flags);
@@ -376,12 +402,14 @@ Example
     client.removeFlags(123, ["\\Flagged"], function(err, flags){
         console.log("Current flags for a message: ", flags);
     });
+```
 
 ### Upload a message
 
 You can upload a message to current mailbox with `client.storeMessage()`
-
+```javascript
     client.storeMessage(message[, flags], callback)
+```
 
 Where
 
@@ -390,19 +418,21 @@ Where
   * **callback** is the callback function, gets message UID and UID and UIDValitity as a param
 
 Example
-
+```javascript
     client.storeMessage("From: ....", ["\\Seen"], function(err, params){
         console.log(err || params.UIDValidity +", "+ params.UID);
     });
+```
 
-When adding a message to the mailbox, also new message event is raised, after 
+When adding a message to the mailbox, the new message event is also raised after 
 the mail has been stored.
 
 ### Copy a message
 
-You can copy a message from current mailbox to a selected one with `client.copyMessage()`
-
+You can copy a message from the current mailbox to a selected one with `client.copyMessage()`
+```javascript
     client.copyMessage(uid, destination, callback)
+```
 
 Where
 
@@ -411,16 +441,18 @@ Where
   * **callback** is the callback function
 
 Example
-
+```javascript
     client.copyMessage(123, "[GMail]/Junk", function(err){
         console.log(err || "success, copied to junk");
     });
+```
 
 ### Move a message
 
 You can move a message from current mailbox to a selected one with `client.moveMessage()`
-
+```javascript
     client.moveMessage(uid, destination, callback)
+```
 
 Where
 
@@ -429,16 +461,18 @@ Where
   * **callback** is the callback function
 
 Example
-
+```javascript
     client.moveMessage(123, "[GMail]/Junk", function(err){
         console.log(err || "success, moved to junk");
     });
+```
 
 ### Delete a message
 
 You can delete a message from current mailbox with `client.deleteMessage()`
-
+```javascript
     client.deleteMessage(uid, callback)
+```
 
 Where
 
@@ -446,23 +480,25 @@ Where
   * **callback** is the callback function
 
 Example
-
+```javascript
     client.deleteMessage(123, function(err){
         console.log(err || "success, message deleted");
     });
+```
 
 ### Wait for new messages
 
 You can listen for new incoming e-mails with event "new"
-
+```javascript
     client.on("new", function(message){
         console.log("New incoming message " + message.title);
     });
-    
+```
+
 ## Complete example
 
 Listing newest 10 messages:
-
+```javascript
     var inbox = require("inbox");
     
     var client = inbox.createConnection(false, "imap.gmail.com", {
@@ -487,3 +523,4 @@ Listing newest 10 messages:
 
         });
     });
+```
