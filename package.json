@@ -1,6 +1,6 @@
 {
     "name": "inbox",
-    "version": "0.1.28",
+    "version": "0.1.29",
     "author" : "Andris Reinman",
     "maintainers":[
         {
@@ -8,19 +8,19 @@
             "email":"andris@node.ee"
         }
     ],
-    
+
     "main": "lib/client.js",
-    
+
     "dependencies": {
         "mimelib": "*",
         "iconv": "*",
         "xoauth2": "*"
     },
-    
+
     "devDependencies": {
         "nodeunit": "*"
     },
-    
+
     "scripts":{
         "test": "nodeunit test"
     }
