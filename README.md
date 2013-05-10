@@ -51,10 +51,6 @@ Example:
         auth:{
             user: "test.nodemailer@gmail.com",
             pass: "Nodemailer123"
-        },
-        client: {
-          name: 'nodeapp',
-          url: 'http://herewesellcats.com'
         }
     });
 ```
