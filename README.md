@@ -51,6 +51,10 @@ Example:
         auth:{
             user: "test.nodemailer@gmail.com",
             pass: "Nodemailer123"
+        },
+        client: {
+          name: 'nodeapp',
+          url: 'http://herewesellcats.com'
         }
     });
 ```
@@ -116,6 +120,19 @@ When the connection has been successfully established a 'connect' event is emitt
     client.on("connect", function(){
         console.log("Successfully connected to server");
     });
+```
+
+### Logout and disconnect
+
+Logout from IMAP and close NET connection.
+
+```javascript
+  client.close();
+
+  client.on('close', function (){
+    console.log('DISCONNECTED!');
+  });
+
 ```
 
 ### List available mailboxes
