@@ -118,6 +118,19 @@ When the connection has been successfully established a 'connect' event is emitt
     });
 ```
 
+### Logout and disconnect
+
+Logout from IMAP and close NET connection.
+
+```javascript
+  client.close();
+
+  client.on('close', function (){
+    console.log('DISCONNECTED!');
+  });
+
+```
+
 ### List available mailboxes
 
 To list the available mailboxes use 
