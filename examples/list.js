@@ -29,7 +29,7 @@ client.on("connect", function(){
                 messages.forEach(function(message){
                     console.log(message);
                 });
-                client.close();
+                //client.close();
             });
         });
     });
@@ -41,8 +41,13 @@ client.on("connect", function(){
 
         client.createMessageStream(message.UID).pipe(process.stdout, {end: false});
     });
+});
 
-    client.on('close', function (){
-        console.log('DISCONNECTED!');
-    });
+client.on('error', function (err){
+    console.log('Error');
+    console.log(err)
+});
+
+client.on('close', function (){
+    console.log('DISCONNECTED!');
 });
