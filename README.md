@@ -537,3 +537,7 @@ Listing newest 10 messages:
         });
     });
 ```
+
+## License
+
+**MIT**
