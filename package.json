@@ -13,7 +13,7 @@
 
     "dependencies": {
         "mimelib": "*",
-        "iconv": "*",
+        "utf7": "~1.0.0",
         "xoauth2": "*"
     },
 
