@@ -1,34 +1,29 @@
 {
-    "name": "inbox",
-    "version": "1.1.39",
-    "author" : "Andris Reinman",
-    "maintainers":[
-        {
-            "name":"andris",
-            "email":"andris@node.ee"
-        }
-    ],
-
-    "main": "lib/client.js",
-
-    "dependencies": {
-        "mimelib": "*",
-        "utf7": "~1.0.0",
-        "xoauth2": "*"
-    },
-
-    "devDependencies": {
-        "nodeunit": "*"
-    },
-
-    "scripts":{
-        "test": "nodeunit test"
-    },
-
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/andris9/inbox"
-    },
-
-    "license": "MIT"
+  "name": "inbox",
+  "version": "1.1.39",
+  "author": "Andris Reinman",
+  "maintainers": [
+    {
+      "name": "andris",
+      "email": "andris@node.ee"
+    }
+  ],
+  "main": "lib/client.js",
+  "dependencies": {
+    "mimelib": "*",
+    "utf7": "~1.0.0",
+    "xoauth2": "*"
+  },
+  "devDependencies": {
+    "nodeunit": "*",
+    "hoodiecrow": "~1.1.16"
+  },
+  "scripts": {
+    "test": "nodeunit test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/andris9/inbox"
+  },
+  "license": "MIT"
 }
