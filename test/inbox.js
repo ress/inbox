@@ -3,9 +3,14 @@ var inbox = require(".."),
 
 var IMAP_PORT = 1143;
 
+var server, client;
+
 module.exports["Inbox tests"] = {
     setUp: function(next){
-        this.server = hoodiecrow({
+        server = null;
+        client = null;
+
+        server = hoodiecrow({
             plugins: ["IDLE"],
             storage: {
                 "INBOX":{
@@ -23,39 +28,195 @@ module.exports["Inbox tests"] = {
                         {raw: "Subject: hello 5\r\n\r\nWorld 5!"},
                         {raw: "Subject: hello 6\r\n\r\nWorld 6!"}
                     ]
+                },
+                "": {
+                    "separator": "/",
+                    "folders": {
+                        "TRASH": {},
+                        "SENT": {}
+                    }
                 }
             }
         });
-
-        this.server.listen(IMAP_PORT, next);
+        server.listen(IMAP_PORT, function(){
+            client = inbox.createConnection(IMAP_PORT, "localhost", {
+                auth:{
+                    user: "testuser",
+                    pass: "testpass"
+                },
+                debug: false
+            });
+            client.connect();
+            client.on("connect", next);
+        });
     },
 
     tearDown: function(next){
-        this.server.close(next);
-    },
-
-    "Connect and authenticate": function(test){
-        var client = inbox.createConnection(IMAP_PORT, "localhost", {
-            auth:{
-                user: "testuser",
-                pass: "testpass"
-            }
+        client.close();
+        client.on("close", function(){
+            server.close(next);
         });
-
-        client.connect();
-
-        client.on("connect", function(){
-            client.openMailbox("INBOX", function(err, mailbox){
+    },
+    "List mailboxes": function(test){
+        client.listMailboxes(function(err, mailboxes){
+            test.ifError(err);
+            test.equal(mailboxes.length, 2);
+            test.equal(mailboxes[0].path, "TRASH");
+            test.equal(mailboxes[1].name, "SENT");
+            test.done();
+        });
+    },
+    "Fetch mailbox": function(test){
+        client.getMailbox("SENT", function(err, mailbox){
+            test.ifError(err);
+            test.equal(Object.keys(mailbox).length, 4);
+            test.equal(mailbox.type, "Sent");
+            test.equal(mailbox.delimiter, "/");
+            test.done();
+        });
+    },
+    "Open mailbox": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            test.equal(mailbox.count, 6);
+            test.equal(mailbox.UIDValidity, "1");
+            test.equal(mailbox.UIDNext, "7");
+            test.done();
+        });
+    },
+    "List messages": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.listMessages(-100, function(err, messages){
                 test.ifError(err);
-                test.equal(mailbox.count, 6);
-                test.equal(mailbox.UIDValidity, "1");
-                test.equal(mailbox.UIDNext, "7");
-                client.close();
+                test.equal(messages.length, 6);
+                for(var i = 0; i < messages.length; i++) {
+                    test.equal(messages[i].UIDValidity, 1);
+                    test.equal(messages[i].UID, i+1);
+                }
+                test.equal(messages[3].from.address, "sender@example.com");
+                test.done();
             });
         });
+    },
+    "List flags": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.listFlags(-100, function(err, messages){
+                test.ifError(err);
+                test.equal(messages.length, 6);
+                for(var i = 0; i < messages.length; i++) {
+                    test.equal(messages[i].flags.length, i === 1 ? 1 : 0);
+                }
+                test.done();
+            });
 
-        client.on("close", function (){
-            test.done();
+        });
+    },
+    "Fetch message details": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.fetchData(4, function(err, message){
+                test.ifError(err);
+                test.equal(Object.keys(message).length, 10);
+                test.equal(message.title, "hello 4")
+                test.equal(message.from.address, "sender@example.com");
+                test.equal(message.to[0].name, "Receiver name");
+                test.done();
+             });
+        });
+    },
+    "Fetch message contents": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            var chunks = [],
+                chunklength = 0,
+                messageStream = client.createMessageStream(1);
+            messageStream.on("data", function(chunk){
+                chunks.push(chunk);
+                chunklength += chunk.length;
+            });
+            messageStream.on("end", function(){
+                test.equal(Buffer.concat(chunks, chunklength).toString(), "Subject: hello 1\r\n\r\nWorld 1!");
+                test.done();
+            });
+
+        });
+    },
+    "Fetch message flags": function(test){
+         client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.fetchFlags(2, function(err, flags) {
+                test.ifError(err);
+                test.equal(flags.length, 1);
+                test.equal(flags[0], "\\Seen");
+                test.done();
+            });
+
+        });
+    },
+    "Add message flag": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.addFlags(2, ["Test"], function(err, flags){
+                test.ifError(err);
+                test.equal(flags.length, 2);
+                test.equal(flags[0], "\\Seen");
+                test.equal(flags[1], "Test");
+                test.done();
+            });
+        });
+    },
+    "Remove message flag": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.removeFlags(2, ["\\Seen"], function(err, flags) {
+                test.ifError(err);
+                test.equal(flags.length, 0);
+                test.done();
+            });
+        });
+    },
+    "Store message": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            test.equal(mailbox.count, 6);
+            client.storeMessage("Subject: hello 7\r\n\r\nWorld 7!", ["\\Seen"], function(err, params){
+                test.ifError(err);
+                test.equal(params.UID, mailbox.UIDNext);
+                client.openMailbox("INBOX", function(err, mailbox){
+                    test.equal(mailbox.count, 7);
+                    test.done();
+                });
+            });
+        });
+    },
+    "Copy message": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            client.copyMessage(3, "TRASH", function(err){
+                test.ifError(err);
+                client.openMailbox("TRASH", function(err, mailbox){
+                    test.ifError(err);
+                    test.equal(mailbox.count, 1);
+                    test.equal(mailbox.UIDNext, 2);
+                    test.done();
+                });
+            })
+        });
+    },
+    "Delete message": function(test){
+        client.openMailbox("INBOX", function(err, mailbox){
+            test.ifError(err);
+            test.equal(mailbox.count, 6);
+            client.deleteMessage(6, function(err){
+                test.ifError(err);
+                client.openMailbox("INBOX", function(err, mailbox){
+                    test.ifError(err);
+                    test.equal(mailbox.count, 5);
+                    test.done();
+                });
+            });
         });
     }
 }
