@@ -1,16 +1,13 @@
+"use strict";
+
 var inbox = require(".."),
     hoodiecrow = require("hoodiecrow");
 
 var IMAP_PORT = 1143;
 
-var server, client;
-
 module.exports["Inbox tests"] = {
     setUp: function(next){
-        server = null;
-        client = null;
-
-        server = hoodiecrow({
+        this.server = hoodiecrow({
             plugins: ["IDLE"],
             storage: {
                 "INBOX":{
@@ -38,27 +35,29 @@ module.exports["Inbox tests"] = {
                 }
             }
         });
-        server.listen(IMAP_PORT, function(){
-            client = inbox.createConnection(IMAP_PORT, "localhost", {
+
+        this.server.listen(IMAP_PORT, (function(){
+            this.client = inbox.createConnection(IMAP_PORT, "localhost", {
                 auth:{
                     user: "testuser",
                     pass: "testpass"
                 },
                 debug: false
             });
-            client.connect();
-            client.on("connect", next);
-        });
+            this.client.connect();
+            this.client.on("connect", next);
+        }).bind(this));
     },
 
     tearDown: function(next){
-        client.close();
-        client.on("close", function(){
-            server.close(next);
-        });
+        this.client.close();
+        this.client.on("close", (function(){
+            this.server.close(next);
+        }).bind(this));
     },
+
     "List mailboxes": function(test){
-        client.listMailboxes(function(err, mailboxes){
+        this.client.listMailboxes(function(err, mailboxes){
             test.ifError(err);
             test.equal(mailboxes.length, 2);
             test.equal(mailboxes[0].path, "TRASH");
@@ -66,8 +65,9 @@ module.exports["Inbox tests"] = {
             test.done();
         });
     },
+
     "Fetch mailbox": function(test){
-        client.getMailbox("SENT", function(err, mailbox){
+        this.client.getMailbox("SENT", function(err, mailbox){
             test.ifError(err);
             test.equal(Object.keys(mailbox).length, 4);
             test.equal(mailbox.type, "Sent");
@@ -75,8 +75,9 @@ module.exports["Inbox tests"] = {
             test.done();
         });
     },
+
     "Open mailbox": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", function(err, mailbox){
             test.ifError(err);
             test.equal(mailbox.count, 6);
             test.equal(mailbox.UIDValidity, "1");
@@ -84,10 +85,11 @@ module.exports["Inbox tests"] = {
             test.done();
         });
     },
+
     "List messages": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.listMessages(-100, function(err, messages){
+            this.client.listMessages(-100, function(err, messages){
                 test.ifError(err);
                 test.equal(messages.length, 6);
                 for(var i = 0; i < messages.length; i++) {
@@ -97,12 +99,13 @@ module.exports["Inbox tests"] = {
                 test.equal(messages[3].from.address, "sender@example.com");
                 test.done();
             });
-        });
+        }).bind(this));
     },
+
     "List flags": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.listFlags(-100, function(err, messages){
+            this.client.listFlags(-100, function(err, messages){
                 test.ifError(err);
                 test.equal(messages.length, 6);
                 for(var i = 0; i < messages.length; i++) {
@@ -111,27 +114,29 @@ module.exports["Inbox tests"] = {
                 test.done();
             });
 
-        });
+        }).bind(this));
     },
+
     "Fetch message details": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.fetchData(4, function(err, message){
+            this.client.fetchData(4, function(err, message){
                 test.ifError(err);
-                test.equal(Object.keys(message).length, 10);
-                test.equal(message.title, "hello 4")
+                test.equal(Object.keys(message).length, 11);
+                test.equal(message.title, "hello 4");
                 test.equal(message.from.address, "sender@example.com");
                 test.equal(message.to[0].name, "Receiver name");
                 test.done();
              });
-        });
+        }).bind(this));
     },
+
     "Fetch message contents": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
             var chunks = [],
                 chunklength = 0,
-                messageStream = client.createMessageStream(1);
+                messageStream = this.client.createMessageStream(1);
             messageStream.on("data", function(chunk){
                 chunks.push(chunk);
                 chunklength += chunk.length;
@@ -141,82 +146,161 @@ module.exports["Inbox tests"] = {
                 test.done();
             });
 
-        });
+        }).bind(this));
     },
+
     "Fetch message flags": function(test){
-         client.openMailbox("INBOX", function(err, mailbox){
+         this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.fetchFlags(2, function(err, flags) {
+            this.client.fetchFlags(2, function(err, flags) {
                 test.ifError(err);
                 test.equal(flags.length, 1);
                 test.equal(flags[0], "\\Seen");
                 test.done();
             });
 
-        });
+        }).bind(this));
     },
+
     "Add message flag": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.addFlags(2, ["Test"], function(err, flags){
+            this.client.addFlags(2, ["Test"], function(err, flags){
                 test.ifError(err);
                 test.equal(flags.length, 2);
                 test.equal(flags[0], "\\Seen");
                 test.equal(flags[1], "Test");
                 test.done();
             });
-        });
+        }).bind(this));
     },
+
     "Remove message flag": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.removeFlags(2, ["\\Seen"], function(err, flags) {
+            this.client.removeFlags(2, ["\\Seen"], function(err, flags) {
                 test.ifError(err);
                 test.equal(flags.length, 0);
                 test.done();
             });
-        });
+        }).bind(this));
     },
+
+
     "Store message": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err, mailbox){
             test.ifError(err);
             test.equal(mailbox.count, 6);
-            client.storeMessage("Subject: hello 7\r\n\r\nWorld 7!", ["\\Seen"], function(err, params){
+            this.client.storeMessage("Subject: hello 7\r\n\r\nWorld 7!", ["\\Seen"], (function(err, params){
                 test.ifError(err);
                 test.equal(params.UID, mailbox.UIDNext);
-                client.openMailbox("INBOX", function(err, mailbox){
+                this.client.openMailbox("INBOX", function(err, mailbox){
                     test.equal(mailbox.count, 7);
                     test.done();
                 });
-            });
-        });
+            }).bind(this));
+        }).bind(this));
     },
+
     "Copy message": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
-            client.copyMessage(3, "TRASH", function(err){
+            this.client.copyMessage(3, "TRASH", (function(err){
                 test.ifError(err);
-                client.openMailbox("TRASH", function(err, mailbox){
+                this.client.openMailbox("TRASH", function(err, mailbox){
                     test.ifError(err);
                     test.equal(mailbox.count, 1);
                     test.equal(mailbox.UIDNext, 2);
                     test.done();
                 });
-            })
-        });
+            }).bind(this));
+        }).bind(this));
     },
+
     "Delete message": function(test){
-        client.openMailbox("INBOX", function(err, mailbox){
+        this.client.openMailbox("INBOX", (function(err, mailbox){
             test.ifError(err);
             test.equal(mailbox.count, 6);
-            client.deleteMessage(6, function(err){
+            this.client.deleteMessage(6, (function(err){
                 test.ifError(err);
-                client.openMailbox("INBOX", function(err, mailbox){
+                this.client.openMailbox("INBOX", function(err, mailbox){
                     test.ifError(err);
                     test.equal(mailbox.count, 5);
                     test.done();
                 });
-            });
+            }).bind(this));
+        }).bind(this));
+    },
+
+    "New message": function(test){
+        this.client.on("new", function(message){
+            test.ok(message);
+            test.done();
         });
+
+        this.client.openMailbox("INBOX", (function(err){
+            this.client.storeMessage("Subject: hello 8\r\n\r\nWorld 8!", function(){});
+        }).bind(this));
     }
-}
+};
+
+module.exports["Condstore tests"] = {
+    setUp: function(next){
+        this.server = hoodiecrow({
+            plugins: ["ENABLE", "CONDSTORE"],
+            storage: {
+                "INBOX":{
+                    messages: [
+                        {raw: "Subject: hello 1\r\n\r\nWorld 1!", internaldate: "14-Sep-2013 21:22:28 -0300"},
+                        {raw: "Subject: hello 2\r\n\r\nWorld 2!", flags: ["\\Seen"]}
+                    ]
+                },
+                "": {
+                    "separator": "/",
+                    "folders": {
+                        "TRASH": {},
+                        "SENT": {}
+                    }
+                }
+            },
+            debug: false
+        });
+
+        this.server.listen(IMAP_PORT, (function(){
+            this.client = inbox.createConnection(IMAP_PORT, "localhost", {
+                auth:{
+                    user: "testuser",
+                    pass: "testpass"
+                },
+                debug: false
+            });
+            this.client.connect();
+            this.client.on("connect", next);
+        }).bind(this));
+    },
+
+    tearDown: function(next){
+        this.client.close();
+        this.client.on("close", (function(){
+            this.server.close(next);
+        }).bind(this));
+    },
+
+    "MODSEQ updates": function(test){
+        this.client.openMailbox("INBOX", (function(err, mailbox){
+            var modseq = mailbox.highestModSeq;
+            test.ok(Number(modseq));
+            this.client.addFlags(2, ["Test"], (function(err, flags){
+                test.ifError(err);
+                this.client.listMessages(0, 0, "(CHANGEDSINCE " + modseq + ")", function(err, messages){
+                    test.ifError(err);
+                    test.equal(messages.length, 1);
+                    test.equal(messages[0].UID, 2);
+                    test.equal(messages[0].modSeq, 3);
+                    test.done();
+                });
+            }).bind(this));
+        }).bind(this));
+    }
+};
+
