@@ -86,6 +86,22 @@ module.exports["Inbox tests"] = {
         });
     },
 
+    "Try to open invalid mailbox": function(test){
+        this.client.openMailbox(undefined, function(err, mailbox){
+            test.ok(err);
+            test.ok(!mailbox);
+            test.done();
+        });
+    },
+
+    "Try to open missing mailbox": function(test){
+        this.client.openMailbox("NON-EXISTENT", function(err, mailbox){
+            test.ok(err);
+            test.ok(!mailbox);
+            test.done();
+        });
+    },
+
     "List messages": function(test){
         this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
