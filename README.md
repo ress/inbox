@@ -8,6 +8,8 @@ The project consists of two major parts
   * IMAP control for accessing mailboxes (under construction)
 
 [![Build Status](https://secure.travis-ci.org/andris9/inbox.png)](http://travis-ci.org/andris9/inbox)
+[![NPM version](https://badge.fury.io/js/inbox.png)](http://badge.fury.io/js/inbox)
+
 
 ## Installation
 
