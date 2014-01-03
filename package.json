@@ -21,9 +21,10 @@
   "scripts": {
     "test": "nodeunit test"
   },
+  "homepage": "https://github.com/andris9/inbox",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andris9/inbox"
+    "url": "https://github.com/andris9/inbox.git"
   },
   "license": "MIT"
 }
