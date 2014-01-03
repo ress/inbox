@@ -30,7 +30,10 @@ module.exports["Inbox tests"] = {
                     "separator": "/",
                     "folders": {
                         "TRASH": {},
-                        "SENT": {}
+                        "SENT": {},
+                        "Unsubscribed": {
+                            subscribed: false
+                        }
                     }
                 }
             }
@@ -59,9 +62,10 @@ module.exports["Inbox tests"] = {
     "List mailboxes": function(test){
         this.client.listMailboxes(function(err, mailboxes){
             test.ifError(err);
-            test.equal(mailboxes.length, 2);
-            test.equal(mailboxes[0].path, "TRASH");
-            test.equal(mailboxes[1].name, "SENT");
+            test.equal(mailboxes.length, 3);
+            test.equal(mailboxes[0].path, "INBOX");
+            test.equal(mailboxes[1].path, "TRASH");
+            test.equal(mailboxes[2].name, "SENT");
             test.done();
         });
     },
@@ -257,5 +261,59 @@ module.exports["Inbox tests"] = {
         this.client.openMailbox("INBOX", (function(err){
             this.client.storeMessage("Subject: hello 8\r\n\r\nWorld 8!", function(){});
         }).bind(this));
+    }
+};
+
+module.exports["Empty LSUB"] = {
+    setUp: function(next){
+        this.server = hoodiecrow({
+            storage: {
+                "INBOX":{
+                    subscribed: false
+                },
+                "": {
+                    "separator": "/",
+                    "folders": {
+                        "TRASH": {
+                            subscribed: false
+                        },
+                        "SENT": {
+                            subscribed: false
+                        }
+                    }
+                }
+            },
+            debug: false
+        });
+
+        this.server.listen(IMAP_PORT, (function(){
+            this.client = inbox.createConnection(IMAP_PORT, "localhost", {
+                auth:{
+                    user: "testuser",
+                    pass: "testpass"
+                },
+                debug: false
+            });
+            this.client.connect();
+            this.client.on("connect", next);
+        }).bind(this));
+    },
+
+    tearDown: function(next){
+        this.client.close();
+        this.client.on("close", (function(){
+            this.server.close(next);
+        }).bind(this));
+    },
+
+    "List mailboxes with empty LSUB": function(test){
+        this.client.listMailboxes(function(err, mailboxes){
+            test.ifError(err);
+            test.equal(mailboxes.length, 3);
+            test.equal(mailboxes[0].path, "INBOX");
+            test.equal(mailboxes[1].path, "TRASH");
+            test.equal(mailboxes[2].name, "SENT");
+            test.done();
+        });
     }
 };
