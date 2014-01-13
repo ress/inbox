@@ -23,7 +23,9 @@ module.exports["Inbox tests"] = {
                             "\r\n"+
                             "World 4!"},
                         {raw: "Subject: hello 5\r\n\r\nWorld 5!"},
-                        {raw: "Subject: hello 6\r\n\r\nWorld 6!"}
+                        {raw: "Subject: hello 6\r\n\r\nWorld 6!"},
+                        {raw: "Content-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: quoted-printable\r\nMIME-Version: 1.0\r\n\r\nwow. very mail. such bodystructure."},
+                        {raw: "Content-Type: multipart/alternative;\r\n boundary=\"=_BOUNDARY_BOUNDARY_BOUNDARY_\";\r\n    charset=\"UTF-8\"\r\nMIME-Version: 1.0\r\nSender: \"FOOBAR\" <foo@bar.io>\r\n\r\nThis is a multi-part message in MIME format\r\n\r\n--=_BOUNDARY_BOUNDARY_BOUNDARY_\r\nContent-Type: text/plain\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\nFOOFOOFOOFOO\r\n\r\n\r\n--=_BOUNDARY_BOUNDARY_BOUNDARY_\r\nContent-Type: text/html\r\nContent-Transfer-Encoding: quoted-printable\r\n\r\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">\r\n<html>\r\n  <head>\r\n  <meta http-equiv=3D\"content-type\" content=3D\"text/html; charset=3Diso-=\r\n8859-1\">\r\n  <title>STUFF</title>\r\n  </head>\r\n  <body>\r\n  <p>stuff<p>\r\n  </body>\r\n</html>\r\n\r\n--=_BOUNDARY_BOUNDARY_BOUNDARY_--"}
                     ]
                 },
                 "": {
@@ -83,9 +85,9 @@ module.exports["Inbox tests"] = {
     "Open mailbox": function(test){
         this.client.openMailbox("INBOX", function(err, mailbox){
             test.ifError(err);
-            test.equal(mailbox.count, 6);
+            test.equal(mailbox.count, 8);
             test.equal(mailbox.UIDValidity, "1");
-            test.equal(mailbox.UIDNext, "7");
+            test.equal(mailbox.UIDNext, "9");
             test.done();
         });
     },
@@ -111,12 +113,35 @@ module.exports["Inbox tests"] = {
             test.ifError(err);
             this.client.listMessages(-100, function(err, messages){
                 test.ifError(err);
-                test.equal(messages.length, 6);
+                test.equal(messages.length, 8);
                 for(var i = 0; i < messages.length; i++) {
                     test.equal(messages[i].UIDValidity, 1);
                     test.equal(messages[i].UID, i+1);
                 }
                 test.equal(messages[3].from.address, "sender@example.com");
+                test.deepEqual(messages[6].bodystructure, { part: '1',
+                    type: 'text/plain',
+                    parameters: { charset: 'utf-8' },
+                    encoding: 'quoted-printable',
+                    size: 35
+                });
+                test.deepEqual(messages[7].bodystructure, {
+                    '1': {
+                        part: '1',
+                        type: 'text/plain',
+                        parameters: {},
+                        encoding: 'quoted-printable',
+                        size: 16
+                    },
+                    '2': {
+                        part: '2',
+                        type: 'text/html',
+                        parameters: {},
+                        encoding: 'quoted-printable',
+                        size: 248
+                    },
+                    type: 'multipart/alternative'
+                });
                 test.done();
             });
         }).bind(this));
@@ -127,7 +152,7 @@ module.exports["Inbox tests"] = {
             test.ifError(err);
             this.client.listFlags(-100, function(err, messages){
                 test.ifError(err);
-                test.equal(messages.length, 6);
+                test.equal(messages.length, 8);
                 for(var i = 0; i < messages.length; i++) {
                     test.equal(messages[i].flags.length, i === 1 ? 1 : 0);
                 }
@@ -210,12 +235,12 @@ module.exports["Inbox tests"] = {
     "Store message": function(test){
         this.client.openMailbox("INBOX", (function(err, mailbox){
             test.ifError(err);
-            test.equal(mailbox.count, 6);
+            test.equal(mailbox.count, 8);
             this.client.storeMessage("Subject: hello 7\r\n\r\nWorld 7!", ["\\Seen"], (function(err, params){
                 test.ifError(err);
                 test.equal(params.UID, mailbox.UIDNext);
                 this.client.openMailbox("INBOX", function(err, mailbox){
-                    test.equal(mailbox.count, 7);
+                    test.equal(mailbox.count, 9);
                     test.done();
                 });
             }).bind(this));
@@ -240,12 +265,12 @@ module.exports["Inbox tests"] = {
     "Delete message": function(test){
         this.client.openMailbox("INBOX", (function(err, mailbox){
             test.ifError(err);
-            test.equal(mailbox.count, 6);
+            test.equal(mailbox.count, 8);
             this.client.deleteMessage(6, (function(err){
                 test.ifError(err);
                 this.client.openMailbox("INBOX", function(err, mailbox){
                     test.ifError(err);
-                    test.equal(mailbox.count, 5);
+                    test.equal(mailbox.count, 7);
                     test.done();
                 });
             }).bind(this));
