@@ -239,6 +239,7 @@ client.listMessages(-10, function(err, messages){
 
 Example output for a message listing
 ```javascript
+<<<<<<< HEAD
 [
     {
         // if uidvalidity changes, all uid values are void!
@@ -279,7 +280,26 @@ Example output for a message listing
 
         messageId: '<04541AB5-9FBD-4255-81AA-18FE67CB97E5@gmail.com>',
         inReplyTo: '<4FB16D5A.30808@gmail.com>',
-        references: ['<4FB16D5A.30808@gmail.com>','<1299323903.19454@foo.bar>']
+        references: ['<4FB16D5A.30808@gmail.com>','<1299323903.19454@foo.bar>'],
+
+        // bodystructure of the message
+        bodystructure: {
+            '1': {
+                part: '1',
+                type: 'text/plain',
+                parameters: {},
+                encoding: 'quoted-printable',
+                size: 16
+            },
+            '2': {
+                part: '2',
+                type: 'text/html',
+                parameters: {},
+                encoding: 'quoted-printable',
+                size: 248
+            },
+            type: 'multipart/alternative'
+        }
     },
     ...
 ]
