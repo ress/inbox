@@ -123,7 +123,8 @@ module.exports["Inbox tests"] = {
                     type: 'text/plain',
                     parameters: { charset: 'utf-8' },
                     encoding: 'quoted-printable',
-                    size: 35
+                    size: 35,
+                    lines: 1
                 });
                 test.deepEqual(messages[7].bodystructure, {
                     '1': {
@@ -131,14 +132,16 @@ module.exports["Inbox tests"] = {
                         type: 'text/plain',
                         parameters: {},
                         encoding: 'quoted-printable',
-                        size: 16
+                        size: 16,
+                        lines: 3
                     },
                     '2': {
                         part: '2',
                         type: 'text/html',
                         parameters: {},
                         encoding: 'quoted-printable',
-                        size: 248
+                        size: 248,
+                        lines: 12
                     },
                     type: 'multipart/alternative'
                 });
