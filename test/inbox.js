@@ -150,6 +150,22 @@ module.exports["Inbox tests"] = {
         }).bind(this));
     },
 
+    "List messages by UID": function(test){
+        this.client.openMailbox("INBOX", (function(err){
+            test.ifError(err);
+            this.client.listMessagesByUID(2, 4, function(err, messages){
+                test.ifError(err);
+                test.equal(messages.length, 3);
+                for(var i = 0; i < messages.length; i++) {
+                    test.equal(messages[i].UIDValidity, 1);
+                    test.equal(messages[i].UID, i + 2);
+                }
+                test.equal(messages[2].from.address, "sender@example.com");
+                test.done();
+            });
+        }).bind(this));
+    },
+
     "List flags": function(test){
         this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);

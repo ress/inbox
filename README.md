@@ -239,7 +239,6 @@ client.listMessages(-10, function(err, messages){
 
 Example output for a message listing
 ```javascript
-<<<<<<< HEAD
 [
     {
         // if uidvalidity changes, all uid values are void!
@@ -308,6 +307,20 @@ Example output for a message listing
 **NB!** If some properties are not present in a message, it may be not included
 in the message object - for example, if there are no "cc:" addresses listed,
 there is no "cc" field in the message object.
+
+### Listing messages by UID
+
+You can list messages by UID with
+
+```javascript
+client.listMessages(firstUID, lastUID, callback)
+```
+
+Where
+
+  * **firstUI** is the UID value to start listing from
+  * **lastUID** is the UID value to end listing with, can be a number or "*"
+  * **callback** is the same as with `listMessage`
 
 ### Listing flags
 
