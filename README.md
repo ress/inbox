@@ -313,7 +313,7 @@ there is no "cc" field in the message object.
 You can list messages by UID with
 
 ```javascript
-client.listMessages(firstUID, lastUID, callback)
+client.listMessagesByUID(firstUID, lastUID, callback)
 ```
 
 Where
