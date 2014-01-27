@@ -213,6 +213,23 @@ module.exports["Inbox tests"] = {
         }).bind(this));
     },
 
+    "Stream should not be ended prematurely": function(test){
+        this.client.openMailbox("INBOX", (function(err){
+            test.ifError(err);
+
+            var messageStream = this.client.createMessageStream(1);
+            messageStream.on("data", function(){});
+            messageStream.on("end", (function(){
+                this.client.listMessagesByUID(2, 2, function(err, messages){
+                    test.ifError(err);
+
+                    test.equal(messages[0].UID, 2);
+                    test.done();
+                });
+            }).bind(this));
+        }).bind(this));
+    },
+
     "Fetch message flags": function(test){
          this.client.openMailbox("INBOX", (function(err){
             test.ifError(err);
