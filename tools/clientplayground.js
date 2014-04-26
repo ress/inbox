@@ -67,6 +67,11 @@ client.on("connect", function(){
 
         //client.listChildren(console.log)
 
+        client.createMailbox('test/foobar', function (err, mailbox) {
+            console.log(err, mailbox);
+            client.deleteMailbox('test/foobar', console.log);
+        });
+
     });
 
     // on new messages, print to console

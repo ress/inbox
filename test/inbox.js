@@ -322,6 +322,38 @@ module.exports["Inbox tests"] = {
         this.client.openMailbox("INBOX", (function(err){
             this.client.storeMessage("Subject: hello 8\r\n\r\nWorld 8!", function(){});
         }).bind(this));
+    },
+
+    "Create mailbox": function(test){
+        var self = this;
+        this.client.createMailbox("NEW-MAILBOX", function(err, mailbox){
+            test.ifError(err);
+            test.equal(mailbox.path, "NEW-MAILBOX");
+            test.equal(mailbox.type, "Normal");
+            test.equal(mailbox.delimiter, "/");
+            self.client.openMailbox("NEW-MAILBOX", function(err, mailbox){
+                test.ifError(err);
+                test.equal(mailbox.count, 0);
+                test.equal(mailbox.UIDValidity, "1");
+                test.equal(mailbox.UIDNext, "1");
+                test.done();
+            });
+        });
+    },
+
+    "Delete mailbox": function(test){
+        var self = this;
+        this.client.createMailbox("NEW-MAILBOX", function(err, mailbox){
+            self.client.deleteMailbox("NEW-MAILBOX", function(err, status){
+                test.ifError(err);
+                test.equal(status, "OK");
+                self.client.openMailbox("NEW-MAILBOX", function(err, mailbox){
+                    test.ok(err);
+                    test.ok(!mailbox);
+                    test.done();
+                });
+            });
+        });
     }
 };
 
