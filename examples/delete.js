@@ -1,6 +1,6 @@
 var inbox = require(".."),
     util = require("util");
-    
+
 var client = inbox.createConnection(false, "imap.gmail.com", {
     secureConnection: true,
     auth:{
@@ -16,7 +16,7 @@ client.on("connect", function(){
 
     client.openMailbox("INBOX", function(error, mailbox){
         if(error) throw error;
-        
+
         client.listMessages(-1, function(error, messages){
             messages.forEach(function(message){
                 console.log("Message")

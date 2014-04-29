@@ -8,6 +8,8 @@ The project consists of two major parts
   * IMAP control for accessing mailboxes (under construction)
 
 [![Build Status](https://secure.travis-ci.org/andris9/inbox.png)](http://travis-ci.org/andris9/inbox)
+[![NPM version](https://badge.fury.io/js/inbox.png)](http://badge.fury.io/js/inbox)
+
 
 ## Installation
 
@@ -21,13 +23,13 @@ Install from npm
 
 Use **inbox** module
 ```javascript
-    var inbox = require("inbox");
+var inbox = require("inbox");
 ```
 ### Create new IMAP connection
 
 Create connection object with
 ```javascript
-    inbox.createConnection(port, host, options)
+inbox.createConnection(port, host, options)
 ```
 
 where
@@ -46,76 +48,76 @@ where
 
 Example:
 ```javascript
-    var client = inbox.createConnection(false, "imap.gmail.com", {
-        secureConnection: true,
-        auth:{
-            user: "test.nodemailer@gmail.com",
-            pass: "Nodemailer123"
-        }
-    });
+var client = inbox.createConnection(false, "imap.gmail.com", {
+    secureConnection: true,
+    auth:{
+        user: "test.nodemailer@gmail.com",
+        pass: "Nodemailer123"
+    }
+});
 ```
 
 Or for login with XOAUTH2 (see examples/xoauth2)
 ```javascript
-    // XOAUTH2
-    var client = inbox.createConnection(false, "imap.gmail.com", {
-        secureConnection: true,
-        auth:{
-            XOAuth2:{
-                user: "example.user@gmail.com",
-                clientId: "8819981768.apps.googleusercontent.com",
-                clientSecret: "{client_secret}",
-                refreshToken: "1/xEoDL4iW3cxlI7yDbSRFYNG01kVKM2C-259HOF2aQbI",
-                accessToken: "vF9dft4qmTc2Nvb3RlckBhdHRhdmlzdGEuY29tCg==",
-                timeout: 3600
-            }
+// XOAUTH2
+var client = inbox.createConnection(false, "imap.gmail.com", {
+    secureConnection: true,
+    auth:{
+        XOAuth2:{
+            user: "example.user@gmail.com",
+            clientId: "8819981768.apps.googleusercontent.com",
+            clientSecret: "{client_secret}",
+            refreshToken: "1/xEoDL4iW3cxlI7yDbSRFYNG01kVKM2C-259HOF2aQbI",
+            accessToken: "vF9dft4qmTc2Nvb3RlckBhdHRhdmlzdGEuY29tCg==",
+            timeout: 3600
         }
-    });
+    }
+});
 ```
 
 
 Or for login with XOAUTH (see examples/xoauth-3lo.js and examples/xoauth-2lo.js)
 
 ```javascript
-    // 3-legged- oauth
-    var client = inbox.createConnection(false, "imap.gmail.com", {
-        secureConnection: true,
-        auth:{
-            XOAuthToken: inbox.createXOAuthGenerator({
-                user: "test.nodemailer@gmail.com",
-                token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
-                tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
-            })
-        }
-    });
+// 3-legged- oauth
+var client = inbox.createConnection(false, "imap.gmail.com", {
+    secureConnection: true,
+    auth:{
+        XOAuthToken: inbox.createXOAuthGenerator({
+            user: "test.nodemailer@gmail.com",
+            token: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
+            tokenSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+        })
+    }
+});
 ```
 
 With 2-legged OAuth, consumerKey and consumerSecret need to have proper values, vs 3-legged OAuth where both default to "anonymous".
 ```javascript
-    // 2-legged- oauth
-    var client = inbox.createConnection(false, "imap.gmail.com", {
-        secureConnection: true,
-        auth:{
-            XOAuthToken: inbox.createXOAuthGenerator({
-                user: "test.nodemailer@gmail.com",
-                requestorId: "test.nodemailer@gmail.com",
-                consumerKey: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
-                consumerSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
-            })
-        }
-    });
+// 2-legged- oauth
+var client = inbox.createConnection(false, "imap.gmail.com", {
+    secureConnection: true,
+    auth:{
+        XOAuthToken: inbox.createXOAuthGenerator({
+            user: "test.nodemailer@gmail.com",
+            requestorId: "test.nodemailer@gmail.com",
+            consumerKey: "1/Gr2OVA2Ol64fNyjZCns-bkRau5eLisbdlEa_HSuTaEk",
+            consumerSecret: "ymFpseHtEnrIsuL8Ppbfnnk3"
+        })
+    }
+});
 ```
 
 Once the connection object has been created, use connect() to create the actual connection.
 ```javascript
-    client.connect();
+client.connect();
 ```
 
 When the connection has been successfully established a 'connect' event is emitted.
 ```javascript
-    client.on("connect", function(){
-        console.log("Successfully connected to server");
-    });
+client.on("connect", function(){
+    console.log("Successfully connected to server");
+});
 ```
 
 ### Logout and disconnect
@@ -123,19 +125,17 @@ When the connection has been successfully established a 'connect' event is emitt
 Logout from IMAP and close NET connection.
 
 ```javascript
-  client.close();
-
-  client.on('close', function (){
+client.close();
+client.on('close', function (){
     console.log('DISCONNECTED!');
-  });
-
+});
 ```
 
 ### List available mailboxes
 
 To list the available mailboxes use
 ```javascript
-    client.listMailboxes(callback)
+client.listMailboxes(callback)
 ```
 
 Where
@@ -157,15 +157,15 @@ Additionally mailboxes have the following methods
 
 Example:
 ```javascript
-    client.listMailboxes(function(error, mailboxes){
-        for(var i=0, len = mailboxes.length; i<len; i++){
-            if(mailboxes[i].hasChildren){
-                mailboxes[i].listChildren(function(error, children){
-                    console.log(children);
-                });
-            }
+client.listMailboxes(function(error, mailboxes){
+    for(var i=0, len = mailboxes.length; i<len; i++){
+        if(mailboxes[i].hasChildren){
+            mailboxes[i].listChildren(function(error, children){
+                console.log(children);
+            });
         }
-    });
+    }
+});
 ```
 
 ### Fetch a specified mailbox object
@@ -173,7 +173,7 @@ Example:
 If you need to access a specific mailbox object (for creating or listing child
 mailboxes etc.), you can do it with
 ```javascript
-    client.getMailbox(path, callback)
+client.getMailbox(path, callback)
 ```
 
 Where
@@ -183,18 +183,18 @@ Where
 
 Example:
 ```javascript
-    client.getMailbox("INBOX.Arhiiv", function(error, mailbox){
-        if(mailbox && mailbox.hasChildren){
-            mailbox.listChildren(console.log);
-        }
-    });
+client.getMailbox("INBOX.Arhiiv", function(error, mailbox){
+    if(mailbox && mailbox.hasChildren){
+        mailbox.listChildren(console.log);
+    }
+});
 ```
 
 ### Select a mailbox
 
 Before you can check mailbox contents, you need to select one with
 ```javascript
-    client.openMailbox(path[, options], callback)
+client.openMailbox(path[, options], callback)
 ```
 
 Where
@@ -206,19 +206,19 @@ Where
 
 Example
 ```javascript
-    client.on("connect", function(){
-        client.openMailbox("INBOX", function(error, info){
-            if(error) throw error;
-            console.log("Message count in INBOX: " + info.count);
-        });
+client.on("connect", function(){
+    client.openMailbox("INBOX", function(error, info){
+        if(error) throw error;
+        console.log("Message count in INBOX: " + info.count);
     });
+});
 ```
 
 ### Listing e-mails
 
 Once a mailbox has been opened you can list contained e-mails with
 ```javascript
-    client.listMessages(from[, limit], callback)
+client.listMessages(from[, limit], callback)
 ```
 
 Where
@@ -229,71 +229,104 @@ Where
 
 Example
 ```javascript
-    // list newest 10 messages
-    client.listMessages(-10, function(err, messages){
-        messages.forEach(function(message){
-            console.log(message.UID + ": " + message.title);
-        });
+// list newest 10 messages
+client.listMessages(-10, function(err, messages){
+    messages.forEach(function(message){
+        console.log(message.UID + ": " + message.title);
     });
+});
 ```
 
 Example output for a message listing
 ```javascript
-    [
-        {
-            // if uidvalidity changes, all uid values are void!
-            UIDValidity: '664399135',
+[
+    {
+        // if uidvalidity changes, all uid values are void!
+        UIDValidity: '664399135',
 
-            // uid value of the message
-            UID: 52,
+        // uid value of the message
+        UID: 52,
 
-            // message flags (Array)
-            flags: [ '\\Flagged', '\\Seen' ],
+        // message flags (Array)
+        flags: [ '\\Flagged', '\\Seen' ],
 
-            // date of the message (Date object)
-            date: Wed, 25 Apr 2012 12:23:05 GMT,
+        // date of the message (Date object)
+        date: Wed, 25 Apr 2012 12:23:05 GMT,
 
-            title: 'This is a message, may contain unicode symbols',
+        title: 'This is a message, may contain unicode symbols',
 
-            // single "from:" address
-            from: {
-                name: 'Andris Reinman',
-                address: 'andris.reinman@gmail.com'
-            },
-
-            // an array of "to:" addresses
-            to: [
-                {
-                    name: 'test nodemailer',
-                    address: 'test.nodemailer@gmail.com'
-                }
-            ],
-
-            // an array of "cc:" addresses
-            cc: [
-                {
-                    name: 'test nodemailer',
-                    address: 'test.nodemailer@gmail.com'
-                }
-            ],
-
-            messageId: '<04541AB5-9FBD-4255-81AA-18FE67CB97E5@gmail.com>',
-            inReplyTo: '<4FB16D5A.30808@gmail.com>',
-            references: ['<4FB16D5A.30808@gmail.com>','<1299323903.19454@foo.bar>']
+        // single "from:" address
+        from: {
+            name: 'Andris Reinman',
+            address: 'andris.reinman@gmail.com'
         },
-        ...
-    ]
+
+        // an array of "to:" addresses
+        to: [
+            {
+                name: 'test nodemailer',
+                address: 'test.nodemailer@gmail.com'
+            }
+        ],
+
+        // an array of "cc:" addresses
+        cc: [
+            {
+                name: 'test nodemailer',
+                address: 'test.nodemailer@gmail.com'
+            }
+        ],
+
+        messageId: '<04541AB5-9FBD-4255-81AA-18FE67CB97E5@gmail.com>',
+        inReplyTo: '<4FB16D5A.30808@gmail.com>',
+        references: ['<4FB16D5A.30808@gmail.com>','<1299323903.19454@foo.bar>'],
+
+        // bodystructure of the message
+        bodystructure: {
+            '1': {
+                part: '1',
+                type: 'text/plain',
+                parameters: {},
+                encoding: 'quoted-printable',
+                size: 16
+            },
+            '2': {
+                part: '2',
+                type: 'text/html',
+                parameters: {},
+                encoding: 'quoted-printable',
+                size: 248
+            },
+            type: 'multipart/alternative'
+        }
+    },
+    ...
+]
 ```
 
 **NB!** If some properties are not present in a message, it may be not included
 in the message object - for example, if there are no "cc:" addresses listed,
 there is no "cc" field in the message object.
 
+### Listing messages by UID
+
+You can list messages by UID with
+
+```javascript
+client.listMessagesByUID(firstUID, lastUID, callback)
+```
+
+Where
+
+  * **firstUI** is the UID value to start listing from
+  * **lastUID** is the UID value to end listing with, can be a number or "*"
+  * **callback** is the same as with `listMessage`
+
 ### Listing flags
 
 As a shorthand listing, you can also list only UID and Flags pairs
 ```javascript
-    client.listFlags(from[, limit], callback)
+client.listFlags(from[, limit], callback)
 ```
 
 Where
@@ -304,36 +337,36 @@ Where
 
 Example
 ```javascript
-    // list flags for newest 10 messages
-    client.listFlags(-10, function(err, messages){
-        messages.forEach(function(message){
-            console.log(message.UID, message.flags);
-        });
+// list flags for newest 10 messages
+client.listFlags(-10, function(err, messages){
+    messages.forEach(function(message){
+        console.log(message.UID, message.flags);
     });
+});
 ```
 
 Example output for a message listing
 ```javascript
-    [
-        {
-            // if uidvalidity changes, all uid values are void!
-            UIDValidity: '664399135',
+[
+    {
+        // if uidvalidity changes, all uid values are void!
+        UIDValidity: '664399135',
 
-            // uid value of the message
-            UID: 52,
+        // uid value of the message
+        UID: 52,
 
-            // message flags (Array)
-            flags: [ '\\Flagged', '\\Seen' ]
-        },
-        ...
-    ]
+        // message flags (Array)
+        flags: [ '\\Flagged', '\\Seen' ]
+    },
+    ...
+]
 ```
 
 ### Fetch message details
 
 To fetch message data (flags, title, etc) for a specific message, use
 ```javascript
-    client.fetchData(uid, callback)
+client.fetchData(uid, callback)
 ```
 
 Where
@@ -343,9 +376,9 @@ Where
 
 Example
 ```javascript
-    client.fetchData(123, function(error, message){
-        console.log(message.flags);
-    });
+client.fetchData(123, function(error, message){
+    console.log(message.flags);
+});
 ```
 
 ### Fetch message contents
@@ -353,7 +386,7 @@ Example
 Message listing only retrieves the envelope part of the message. To get the full RFC822 message body
 you need to fetch the message.
 ```javascript
-    var messageStream = client.createMessageStream(uid)
+var messageStream = client.createMessageStream(uid)
 ```
 
 Where
@@ -362,11 +395,51 @@ Where
 
 Example (output message contents to console)
 ```javascript
-    client.createMessageStream(123).pipe(process.stdout, {end: false});
+client.createMessageStream(123).pipe(process.stdout, {end: false});
 ```
 
 **NB!** If the opened mailbox is not in read-only mode, the message will be
 automatically marked as read (\Seen flag is set) when the message is fetched.
+
+### Searching for messages
+
+You can search for messages with
+
+```javascript
+client.search(query[, isUID], callback)
+```
+
+Where
+
+  * **query** is the search term as an object
+  * **isUID** is an optional boolean value - if set to true perform `UID SEARCH` instead of `SEARCH`
+  * **callback** is the callback function with error object and an array of matching seq or UID numbers
+
+**Queries**
+
+Queries are composed as objects where keys are search terms and values are term arguments. 
+Only strings, numbers and Dates are used. If the value is an array, the members of it are processed separately
+(use this for terms that require multiple params). If the value is a Date, it is converted to the form of "01-Jan-1970".
+Subqueries (OR, NOT) are made up of objects
+
+Examples:
+
+```javascript
+// SEARCH UNSEEN
+query = {unseen: true}
+// SEARCH KEYWORD "flagname"
+query = {keyword: "flagname"}
+// SEARCH HEADER "subject" "hello world"
+query = {header: ["subject", "hello world"]};
+// SEARCH UNSEEN HEADER "subject" "hello world"
+query = {unseen: true, header: ["subject", "hello world"]};
+// SEARCH OR UNSEEN SEEN
+query = {or: {unseen: true, seen: true}};
+// SEARCH UNSEEN NOT SEEN
+query = {unseen: true, not: {seen: true}}
+```
+
+Returned list is already sorted and all values are numbers.
 
 ### Message flags
 
@@ -374,7 +447,7 @@ You can add and remove message flags like `\Seen` or `\Answered` with `client.ad
 
 **List flags**
 ```javascript
-    client.fetchFlags(uid, callback)
+client.fetchFlags(uid, callback)
 ```
 
 Where
@@ -384,7 +457,7 @@ Where
 
 **Add flags**
 ```javascript
-    client.addFlags(uid, flags, callback)
+client.addFlags(uid, flags, callback)
 ```
 
 Where
@@ -395,7 +468,7 @@ Where
 
 **Remove flags**
 ```javascript
-    client.removeFlags(uid, flags, callback)
+client.removeFlags(uid, flags, callback)
 ```
 
 Where
@@ -406,22 +479,22 @@ Where
 
 Example
 ```javascript
-    // add \Seen and \Flagged flag to a message
-    client.addFlags(123, ["\\Seen", "\\Flagged"], function(err, flags){
-        console.log("Current flags for a message: ", flags);
-    });
+// add \Seen and \Flagged flag to a message
+client.addFlags(123, ["\\Seen", "\\Flagged"], function(err, flags){
+    console.log("Current flags for a message: ", flags);
+});
 
-    // remove \Flagged flag from a message
-    client.removeFlags(123, ["\\Flagged"], function(err, flags){
-        console.log("Current flags for a message: ", flags);
-    });
+// remove \Flagged flag from a message
+client.removeFlags(123, ["\\Flagged"], function(err, flags){
+    console.log("Current flags for a message: ", flags);
+});
 ```
 
 ### Upload a message
 
 You can upload a message to current mailbox with `client.storeMessage()`
 ```javascript
-    client.storeMessage(message[, flags], callback)
+client.storeMessage(message[, flags], callback)
 ```
 
 Where
@@ -432,9 +505,9 @@ Where
 
 Example
 ```javascript
-    client.storeMessage("From: ....", ["\\Seen"], function(err, params){
-        console.log(err || params.UIDValidity +", "+ params.UID);
-    });
+client.storeMessage("From: ....", ["\\Seen"], function(err, params){
+    console.log(err || params.UIDValidity +", "+ params.UID);
+});
 ```
 
 When adding a message to the mailbox, the new message event is also raised after
@@ -444,7 +517,7 @@ the mail has been stored.
 
 You can copy a message from the current mailbox to a selected one with `client.copyMessage()`
 ```javascript
-    client.copyMessage(uid, destination, callback)
+client.copyMessage(uid, destination, callback)
 ```
 
 Where
@@ -455,16 +528,16 @@ Where
 
 Example
 ```javascript
-    client.copyMessage(123, "[GMail]/Junk", function(err){
-        console.log(err || "success, copied to junk");
-    });
+client.copyMessage(123, "[GMail]/Junk", function(err){
+    console.log(err || "success, copied to junk");
+});
 ```
 
 ### Move a message
 
 You can move a message from current mailbox to a selected one with `client.moveMessage()`
 ```javascript
-    client.moveMessage(uid, destination, callback)
+client.moveMessage(uid, destination, callback)
 ```
 
 Where
@@ -475,16 +548,16 @@ Where
 
 Example
 ```javascript
-    client.moveMessage(123, "[GMail]/Junk", function(err){
-        console.log(err || "success, moved to junk");
-    });
+client.moveMessage(123, "[GMail]/Junk", function(err){
+    console.log(err || "success, moved to junk");
+});
 ```
 
 ### Delete a message
 
 You can delete a message from current mailbox with `client.deleteMessage()`
 ```javascript
-    client.deleteMessage(uid, callback)
+client.deleteMessage(uid, callback)
 ```
 
 Where
@@ -494,48 +567,48 @@ Where
 
 Example
 ```javascript
-    client.deleteMessage(123, function(err){
-        console.log(err || "success, message deleted");
-    });
+client.deleteMessage(123, function(err){
+    console.log(err || "success, message deleted");
+});
 ```
 
 ### Wait for new messages
 
 You can listen for new incoming e-mails with event "new"
 ```javascript
-    client.on("new", function(message){
-        console.log("New incoming message " + message.title);
-    });
+client.on("new", function(message){
+    console.log("New incoming message " + message.title);
+});
 ```
 
 ## Complete example
 
 Listing newest 10 messages:
 ```javascript
-    var inbox = require("inbox");
+var inbox = require("inbox");
 
-    var client = inbox.createConnection(false, "imap.gmail.com", {
-        secureConnection: true,
-        auth:{
-            user: "test.nodemailer@gmail.com",
-            pass: "Nodemailer123"
-        }
-    });
+var client = inbox.createConnection(false, "imap.gmail.com", {
+    secureConnection: true,
+    auth:{
+        user: "test.nodemailer@gmail.com",
+        pass: "Nodemailer123"
+    }
+});
 
-    client.connect();
+client.connect();
 
-    client.on("connect", function(){
-        client.openMailbox("INBOX", function(error, info){
-            if(error) throw error;
+client.on("connect", function(){
+    client.openMailbox("INBOX", function(error, info){
+        if(error) throw error;
 
-            client.listMessages(-10, function(err, messages){
-                messages.forEach(function(message){
-                    console.log(message.UID + ": " + message.title);
-                });
+        client.listMessages(-10, function(err, messages){
+            messages.forEach(function(message){
+                console.log(message.UID + ": " + message.title);
             });
-
         });
+
     });
+});
 ```
 
 ## License
