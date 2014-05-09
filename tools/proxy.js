@@ -2,19 +2,19 @@ var net = require('net'),
     tls = require('tls'),
     fs = require("fs");
 
-var targetHost = "imap.gmail.com",
-    targetPort = "993",
+var targetHost = "imap.gmail.com",//"imap-mail.outlook.com",
+    targetPort = 993,
     targetSecure = true,
-    logfile = "log.txt",
+    logfile = "log_",
     proxyPort = 143;
 
 var sessionCounter = 0,
-    logStream = fs.createWriteStream(logfile),
 
     server = net.createServer(function(client) { //'connection' listener
         console.log('Client connected');
-
         var socket, target, session = ++sessionCounter;
+
+        var logStream = fs.createWriteStream(logfile + session + ".txt");
 
         client.on('end', function() {
             console.log('Client disconnected');
