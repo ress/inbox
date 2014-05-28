@@ -212,6 +212,17 @@ exports["Structure tests"] = {
         });
 
         lp.end("TAG1 \"abc\\\"\" (\"def\")");
+    },
+
+    "Escaped label": function(test){
+        var input = 'X-GM-LABELS ("\\\\Draft")';
+        var lp = new IMAPLineParser();
+        lp.on("line", function(data){
+            test.deepEqual(data, [ 'X-GM-LABELS', [ '\\Draft' ] ]);
+            test.done();
+        });
+
+        lp.end(input);
     }
 }
 
